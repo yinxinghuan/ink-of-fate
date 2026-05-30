@@ -14,6 +14,13 @@ interface Props {
   authorName?: string;
 }
 
+const TONE_LABEL_EN: Record<string, string> = {
+  intense: 'INTENSE',
+  smirk: 'SMIRK',
+  squint: 'SQUINT',
+  shrug: 'SHRUG',
+};
+
 export default function VerdictScreen({
   tattoo,
   viewMode,
@@ -27,11 +34,7 @@ export default function VerdictScreen({
   const { reading } = tattoo;
   const [typed, setTyped] = useState('');
   const [skipped, setSkipped] = useState(false);
-  // Toggle: main photo = the finished tattoo by default; tap to swap.
   const [showBefore, setShowBefore] = useState(false);
-  // Detailed reading is collapsed by default; tap the chevron to expand.
-  // First expand triggers the typewriter; subsequent toggles just show /
-  // hide the already-typed text.
   const [readingOpen, setReadingOpen] = useState(false);
   const [readingTouched, setReadingTouched] = useState(false);
 
@@ -43,7 +46,6 @@ export default function VerdictScreen({
     setReadingTouched(false);
   }, [reading.meaning]);
 
-  // Only start the typewriter once the user opens the reading panel.
   useEffect(() => {
     if (!readingOpen || !readingTouched) return;
     if (typed.length >= reading.meaning.length) return;
@@ -66,10 +68,6 @@ export default function VerdictScreen({
     setReadingOpen((o) => !o);
   };
 
-  const metaLine =
-    `${tattoo.ticketNumber} · ${tattoo.signedDate} · ` +
-    `${placementLabel(reading.placement)} · ${styleLabel(reading.style)}`;
-
   const mainUrl = showBefore ? tattoo.selfieUrl : tattoo.imageUrl;
   const insetUrl = showBefore ? tattoo.imageUrl : tattoo.selfieUrl;
   const mainLabel = showBefore ? t('result_before') : t('result_after');
@@ -79,77 +77,112 @@ export default function VerdictScreen({
 
   return (
     <div className="iof-verdict">
-      <div className="iof-verdict__photo" onPointerDown={swap} role="button" tabIndex={-1}>
-        <img src={mainUrl} alt={reading.tattoo_description} />
-        <div className="iof-verdict__photo-stamp">
-          INK OF FATE · {tattoo.signedDate}
-        </div>
-        <div className="iof-verdict__photo-tag">{mainLabel}</div>
-        <div className="iof-verdict__attachment" aria-hidden>
-          <img src={insetUrl} alt="" />
-          <div className="iof-verdict__attachment-label">{insetLabel}</div>
-        </div>
-        <div className="iof-verdict__swap-hint">{t('result_tap_to_swap')}</div>
-      </div>
-
-      <div className="iof-verdict__reaction">
-        <img
-          src={
-            import.meta.env.BASE_URL +
-            `scenes/artist_${reading.verdict_tone}.jpg`
-          }
-          alt=""
-        />
-        <div className="iof-verdict__reaction-headline">{reading.headline}</div>
-      </div>
-
-      <div className="iof-verdict__paper">
-        <div className="iof-verdict__paper-inner">
-          {authorName && viewMode === 'gallery' && (
-            <div className="iof-verdict__author">— marked: {authorName}</div>
-          )}
-
-          <div className="iof-verdict__quip">
-            <span className="iof-verdict__quote-mark">“</span>
-            {reading.artist_quip}
-            <span className="iof-verdict__quote-mark">”</span>
+      {/* ───── Hero photo + before/after polaroid swap ───── */}
+      <div className="iof-verdict__hero">
+        <div
+          className="iof-verdict__photo"
+          onPointerDown={swap}
+          role="button"
+          tabIndex={-1}
+        >
+          <img src={mainUrl} alt={reading.tattoo_description} />
+          <div className="iof-verdict__photo-stamp">
+            INK OF FATE · {tattoo.signedDate}
           </div>
-
-          <div className="iof-verdict__meta-line">{metaLine}</div>
-
-          <button
-            type="button"
-            className={
-              'iof-verdict__reading-toggle ' +
-              (readingOpen ? 'iof-verdict__reading-toggle--open' : '')
-            }
-            onPointerDown={toggleReading}
-          >
-            <span>{readingOpen ? t('result_collapse') : t('result_read_more')}</span>
-            <span className="iof-verdict__reading-chevron" aria-hidden>
-              {readingOpen ? '▾' : '▸'}
-            </span>
-          </button>
-
-          {readingOpen && (
-            <div
-              className="iof-verdict__reading iof-verdict__reading--enter"
-              onPointerDown={skipTypewriter}
-              role="button"
-              tabIndex={-1}
-            >
-              {readingText || ' '}
-            </div>
-          )}
-
-          <div className="iof-verdict__invoice">{t('result_invoice')}</div>
+          <div className="iof-verdict__photo-tag">{mainLabel}</div>
+          <div className="iof-verdict__attachment" aria-hidden>
+            <img src={insetUrl} alt="" />
+            <div className="iof-verdict__attachment-label">{insetLabel}</div>
+          </div>
+          <div className="iof-verdict__swap-hint">{t('result_tap_to_swap')}</div>
         </div>
       </div>
 
+      {/* ───── Title block: ticket label + headline + meta chips ───── */}
+      <div className="iof-verdict__title-block">
+        <div className="iof-verdict__ticket-line">
+          {tattoo.ticketNumber} · {tattoo.signedDate}
+          {authorName && viewMode === 'gallery' ? ` · ${authorName}` : ''}
+        </div>
+        <h1 className="iof-verdict__headline">{reading.headline}</h1>
+        <div className="iof-verdict__meta-chips">
+          <span className="iof-meta-chip">{styleLabel(reading.style)}</span>
+          <span className="iof-meta-chip">{placementLabel(reading.placement)}</span>
+          <span className="iof-meta-chip iof-meta-chip--accent">
+            {TONE_LABEL_EN[reading.verdict_tone] ?? reading.verdict_tone}
+          </span>
+        </div>
+      </div>
+
+      {/* ───── Card 01 — the artist's spoken quip + matched face ───── */}
+      <div className="iof-verdict__card">
+        <div className="iof-verdict__card-head">
+          <span className="iof-verdict__card-num">01</span>
+          <span className="iof-verdict__card-title">{t('result_artist_says')}</span>
+        </div>
+        <div className="iof-verdict__artist-row">
+          <div className="iof-verdict__artist-face" aria-hidden>
+            <img
+              src={
+                import.meta.env.BASE_URL +
+                `scenes/artist_${reading.verdict_tone}.jpg`
+              }
+              alt=""
+            />
+          </div>
+          <div className="iof-verdict__quip">
+            <span className="iof-verdict__quote">“</span>
+            {reading.artist_quip}
+            <span className="iof-verdict__quote">”</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ───── Card 02 — the long reading, collapsed by default ───── */}
+      <div
+        className={
+          'iof-verdict__card iof-verdict__card--toggle ' +
+          (readingOpen ? 'iof-verdict__card--open' : '')
+        }
+      >
+        <button
+          type="button"
+          className="iof-verdict__card-head iof-verdict__card-head--toggle"
+          onPointerDown={toggleReading}
+        >
+          <span className="iof-verdict__card-num">02</span>
+          <span className="iof-verdict__card-title">{t('result_meaning')}</span>
+          <span className="iof-verdict__card-state">
+            {readingOpen ? t('result_collapse') : t('result_read_more')}
+          </span>
+          <span className="iof-verdict__card-chevron" aria-hidden>
+            {readingOpen ? '▾' : '▸'}
+          </span>
+        </button>
+        {readingOpen && (
+          <div
+            className="iof-verdict__reading"
+            onPointerDown={skipTypewriter}
+            role="button"
+            tabIndex={-1}
+          >
+            {readingText || ' '}
+          </div>
+        )}
+      </div>
+
+      {/* ───── Invoice strip — the bill ───── */}
+      <div className="iof-verdict__invoice-line">
+        <span className="iof-verdict__invoice-label">INVOICE</span>
+        <span className="iof-verdict__invoice-amount">$200</span>
+        <span className="iof-verdict__invoice-tail">{t('result_invoice_tail')}</span>
+      </div>
+
+      {/* ───── CTAs ───── */}
       <div className="iof-verdict__ctas">
         <button
           type="button"
-          className="iof-cta iof-cta--primary iof-cta--big"
+          className="iof-verdict__cta iof-verdict__cta--primary"
           onPointerDown={onWall}
         >
           {t('result_cta_wall')}
@@ -157,7 +190,7 @@ export default function VerdictScreen({
         <div className="iof-verdict__ctas-row">
           <button
             type="button"
-            className="iof-cta iof-cta--secondary"
+            className="iof-verdict__cta iof-verdict__cta--secondary"
             onPointerDown={onNew}
           >
             {viewMode === 'gallery' ? t('result_back_to_studio') : t('result_cta_again')}
@@ -165,7 +198,7 @@ export default function VerdictScreen({
           {onShare && (
             <button
               type="button"
-              className="iof-cta iof-cta--secondary"
+              className="iof-verdict__cta iof-verdict__cta--secondary"
               onPointerDown={onShare}
               disabled={shareDisabled}
             >
