@@ -32,6 +32,7 @@ const DEMO_TATTOO: Tattoo = {
     tattoo_description: 'a long black centipede curling around the throat, 100 small legs',
     placement: 'throat',
     style: 'stick-and-poke',
+    verdict_tone: 'squint',
   },
   ticketNumber: 'IOF-03142',
   signedDate: '2026-05-30',

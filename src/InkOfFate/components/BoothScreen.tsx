@@ -16,18 +16,13 @@ export default function BoothScreen({
 }: Props) {
   return (
     <div className="iof-booth">
-      <div className="iof-booth__bricks" aria-hidden />
-      <div className="iof-booth__rain" aria-hidden />
+      <div className="iof-scene-bg" aria-hidden>
+        <img src={import.meta.env.BASE_URL + 'scenes/scene_booth.jpg'} alt="" />
+        <div className="iof-scene-bg__vignette" />
+      </div>
 
       <div className="iof-booth__sign-wrap">
         <NeonSign />
-      </div>
-
-      <div className="iof-booth__door" aria-hidden>
-        <div className="iof-booth__door-frame">
-          <div className="iof-booth__door-glow" />
-          <div className="iof-booth__door-knob" />
-        </div>
       </div>
 
       <button

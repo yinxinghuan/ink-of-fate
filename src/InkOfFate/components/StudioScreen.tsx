@@ -47,15 +47,16 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
 
   return (
     <div className="iof-studio">
+      <div className="iof-scene-bg" aria-hidden>
+        <img src={import.meta.env.BASE_URL + 'scenes/scene_studio.jpg'} alt="" />
+        <div className="iof-scene-bg__vignette iof-scene-bg__vignette--studio" />
+      </div>
+
       <button className="iof-studio__back" type="button" onPointerDown={onBack}>
         ← {t('studio_back')}
       </button>
 
-      <div className="iof-studio__lamp" aria-hidden>
-        <div className="iof-studio__lamp-cone" />
-      </div>
-
-      <div className="iof-studio__inner">
+      <div className="iof-studio__inner iof-studio__inner--panel">
         <p className="iof-studio__intro">{t('studio_artist_intro')}</p>
 
         <section className="iof-studio__section">

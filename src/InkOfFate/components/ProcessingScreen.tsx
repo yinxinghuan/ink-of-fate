@@ -26,15 +26,9 @@ export default function ProcessingScreen({ stage, ticketNumber }: Props) {
   const key = STAGE_KEY[stage] || 'processing_studying';
   return (
     <div className="iof-proc">
-      <div className="iof-proc__lamp" aria-hidden />
-      <div className="iof-proc__needle-rack" aria-hidden>
-        <div className="iof-proc__needle iof-proc__needle--1" />
-        <div className="iof-proc__needle iof-proc__needle--2" />
-        <div className="iof-proc__needle iof-proc__needle--3" />
-      </div>
-      <div className="iof-proc__gun" aria-hidden>
-        <div className="iof-proc__gun-body" />
-        <div className="iof-proc__gun-spark" />
+      <div className="iof-scene-bg" aria-hidden>
+        <img src={import.meta.env.BASE_URL + 'scenes/scene_processing.jpg'} alt="" />
+        <div className="iof-scene-bg__vignette iof-scene-bg__vignette--processing" />
       </div>
       <div className="iof-proc__stage">
         <div className="iof-proc__typed">{t(key)}{dots}</div>

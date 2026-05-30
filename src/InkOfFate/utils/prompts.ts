@@ -10,7 +10,7 @@
 // reference for. See feedback_img2img_subject_agnostic_prompt — the image
 // prompt below describes only the scene/skin/ink, never the subject.
 
-import type { FateReading, Placement, TattooStyle } from '../types';
+import type { FateReading, Placement, TattooStyle, VerdictTone } from '../types';
 
 // ─── Placement + style enumerations ──────────────────────────────────────
 
@@ -36,6 +36,8 @@ export const STYLES: TattooStyle[] = [
   'fine-line',
   'gothic-blackletter',
 ];
+
+export const VERDICT_TONES: VerdictTone[] = ['intense', 'smirk', 'squint', 'shrug'];
 
 // ─── Human-readable mappings ─────────────────────────────────────────────
 
@@ -109,6 +111,12 @@ catch it): ${PLACEMENTS.join(', ')}.
 
 Pick exactly one of these STYLES: ${STYLES.join(', ')}.
 
+Also pick the EXPRESSION you wear while reading this one back to them. One of:
+- intense — you've nailed who they are; deep eye-contact
+- smirk   — you find them slightly funny; quiet knowing grin
+- squint  — you pity them a little; grim concern
+- shrug   — you don't care; this is just another receipt
+
 The tattoo design itself should be a concrete image — an animal, an object,
 a symbol, a short phrase, a small scene — never abstract "energy" or "vibes."
 
@@ -121,7 +129,8 @@ markdown fence. The JSON has exactly these fields:
   "meaning": "3 to 5 short sentences. What this tattoo means about them. Specific. Slightly dark. No emoji.",
   "tattoo_description": "1 short sentence describing the visible design (what the ink shows)",
   "placement": "one of the PLACEMENTS exactly",
-  "style": "one of the STYLES exactly"
+  "style": "one of the STYLES exactly",
+  "verdict_tone": "one of: intense, smirk, squint, shrug"
 }
 `.trim();
 
@@ -167,6 +176,9 @@ export function parseFateReading(raw: string): FateReading {
   const style = (STYLES as string[]).includes(json.style)
     ? (json.style as TattooStyle)
     : randomFrom(STYLES);
+  const verdict_tone = (VERDICT_TONES as string[]).includes(json.verdict_tone)
+    ? (json.verdict_tone as VerdictTone)
+    : randomFrom(VERDICT_TONES);
   return {
     headline,
     artist_quip: artistQuip,
@@ -174,6 +186,7 @@ export function parseFateReading(raw: string): FateReading {
     tattoo_description: desc,
     placement,
     style,
+    verdict_tone,
   };
 }
 

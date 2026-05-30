@@ -21,6 +21,10 @@ export type TattooStyle =
   | 'fine-line'
   | 'gothic-blackletter';
 
+/** The artist's reaction face shown next to the verdict. The LLM picks one
+ *  matching the tone of its reading. */
+export type VerdictTone = 'intense' | 'smirk' | 'squint' | 'shrug';
+
 export interface FateReading {
   /** ALL-CAPS, ≤6 words. */
   headline: string;
@@ -32,6 +36,7 @@ export interface FateReading {
   tattoo_description: string;
   placement: Placement;
   style: TattooStyle;
+  verdict_tone: VerdictTone;
 }
 
 export interface Tattoo {

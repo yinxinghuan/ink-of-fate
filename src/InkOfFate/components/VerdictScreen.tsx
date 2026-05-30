@@ -74,10 +74,21 @@ export default function VerdictScreen({
             </div>
           </div>
 
-          <div className="iof-verdict__quip">
-            <span className="iof-verdict__quote-mark">“</span>
-            {reading.artist_quip}
-            <span className="iof-verdict__quote-mark">”</span>
+          <div className="iof-verdict__quip-row">
+            <div className="iof-verdict__artist-portrait" aria-hidden>
+              <img
+                src={
+                  import.meta.env.BASE_URL +
+                  `scenes/artist_${reading.verdict_tone}.jpg`
+                }
+                alt=""
+              />
+            </div>
+            <div className="iof-verdict__quip">
+              <span className="iof-verdict__quote-mark">“</span>
+              {reading.artist_quip}
+              <span className="iof-verdict__quote-mark">”</span>
+            </div>
           </div>
 
           <div className="iof-verdict__reading-label">{t('result_meaning')}</div>
