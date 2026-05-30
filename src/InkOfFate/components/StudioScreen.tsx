@@ -118,8 +118,11 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
           disabled={!picked}
           onPointerDown={handleSubmit}
         >
-          {picked ? t('studio_cta') : t('studio_cta_disabled')}
+          {t('studio_cta')}
         </button>
+        {!picked && (
+          <div className="iof-studio__hint">{t('studio_cta_disabled')}</div>
+        )}
         {errorLabel && <div className="iof-studio__error">{errorLabel}</div>}
       </div>
     </div>

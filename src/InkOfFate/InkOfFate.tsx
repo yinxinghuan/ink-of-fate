@@ -188,6 +188,8 @@ export default function InkOfFate() {
           tattoo: d.t,
         }))
       : gallery.entries;
+  const demoMine: Tattoo[] =
+    demo === 'wall' || demo === 'poster' ? [DEMO_TATTOO] : ownTattoos;
   const wallLoaded = demo === 'wall' || demo === 'poster' ? true : gallery.loaded;
 
   return (
@@ -227,6 +229,7 @@ export default function InkOfFate() {
       {phase === 'wall' && (
         <ParlorWall
           entries={wallEntries}
+          mine={demoMine}
           loaded={wallLoaded}
           onBack={handleBackFromWall}
           onView={handleViewFromWall}

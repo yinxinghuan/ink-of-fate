@@ -1,15 +1,46 @@
+import { useState } from 'react';
 import { t } from '../i18n';
-import type { WallEntry } from '../types';
+import type { Tattoo, WallEntry } from '../types';
 
 interface Props {
   entries: WallEntry[];
+  mine: Tattoo[];
   loaded: boolean;
   onBack: () => void;
   onView: (entry: WallEntry) => void;
   onNew: () => void;
 }
 
-export default function ParlorWall({ entries, loaded, onBack, onView, onNew }: Props) {
+type Scope = 'all' | 'mine';
+
+export default function ParlorWall({
+  entries,
+  mine,
+  loaded,
+  onBack,
+  onView,
+  onNew,
+}: Props) {
+  // Default to ALL on landing — per memory rule for wall-as-landing games.
+  const [scope, setScope] = useState<Scope>('all');
+
+  // Project the player's own tattoos into the same WallEntry shape so the
+  // render path is identical.
+  const mineEntries: WallEntry[] = mine.map((t) => ({
+    userId: 'me',
+    userName: undefined,
+    userAvatarUrl: undefined,
+    tattoo: t,
+  }));
+
+  const list = scope === 'all' ? entries : mineEntries;
+  const visibleEmpty =
+    loaded && list.length === 0
+      ? scope === 'mine'
+        ? t('wall_empty_mine')
+        : t('wall_empty_all')
+      : null;
+
   return (
     <div className="iof-wall">
       <header className="iof-wall__head">
@@ -18,20 +49,45 @@ export default function ParlorWall({ entries, loaded, onBack, onView, onNew }: P
         </button>
         <div className="iof-wall__title-block">
           <div className="iof-wall__title">{t('wall_title')}</div>
-          <div className="iof-wall__sub">{t('wall_sub')}</div>
         </div>
-        <button type="button" className="iof-wall__new" onPointerDown={onNew}>
-          + {t('wall_new')}
-        </button>
+        <div className="iof-wall__head-spacer" />
       </header>
 
+      <div className="iof-wall__tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={scope === 'all'}
+          className={
+            'iof-wall__tab ' +
+            (scope === 'all' ? 'iof-wall__tab--active' : '')
+          }
+          onPointerDown={() => setScope('all')}
+        >
+          {t('wall_tab_all')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={scope === 'mine'}
+          className={
+            'iof-wall__tab ' +
+            (scope === 'mine' ? 'iof-wall__tab--active' : '')
+          }
+          onPointerDown={() => setScope('mine')}
+        >
+          {t('wall_tab_mine')}
+          {mine.length > 0 && (
+            <span className="iof-wall__tab-badge">{mine.length}</span>
+          )}
+        </button>
+      </div>
+
       {!loaded && <div className="iof-wall__loading">{t('wall_loading')}</div>}
-      {loaded && entries.length === 0 && (
-        <div className="iof-wall__empty">{t('wall_empty')}</div>
-      )}
+      {visibleEmpty && <div className="iof-wall__empty">{visibleEmpty}</div>}
 
       <div className="iof-wall__grid">
-        {entries.map((e) => (
+        {list.map((e) => (
           <button
             key={`${e.userId}-${e.tattoo.id}`}
             className="iof-wall__card"
@@ -51,6 +107,14 @@ export default function ParlorWall({ entries, loaded, onBack, onView, onNew }: P
           </button>
         ))}
       </div>
+
+      <button
+        type="button"
+        className="iof-wall__fab iof-cta iof-cta--neon"
+        onPointerDown={onNew}
+      >
+        + {t('wall_fab')}
+      </button>
     </div>
   );
 }
