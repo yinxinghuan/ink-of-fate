@@ -25,21 +25,22 @@ export default function BoothScreen({
         <NeonSign small />
       </div>
 
-      <button
-        className="iof-cta iof-cta--neon"
-        onPointerDown={onStepIn}
-        type="button"
-      >
-        {t('booth_step_in')}
-      </button>
-
-      <button
-        className="iof-booth__wall-link"
-        onPointerDown={onWall}
-        type="button"
-      >
-        {t('wall_title')} →
-      </button>
+      <div className="iof-booth__ctas">
+        <button
+          className="iof-cta iof-cta--neon"
+          onPointerDown={onStepIn}
+          type="button"
+        >
+          {t('booth_step_in')}
+        </button>
+        <button
+          className="iof-cta iof-booth__wall-cta"
+          onPointerDown={onWall}
+          type="button"
+        >
+          {t('wall_title')} →
+        </button>
+      </div>
 
       <div className="iof-booth__meta">
         <div>{t('booth_open_since')}</div>

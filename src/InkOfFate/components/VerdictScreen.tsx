@@ -27,10 +27,15 @@ export default function VerdictScreen({
   const { reading } = tattoo;
   const [typed, setTyped] = useState('');
   const [skipped, setSkipped] = useState(false);
+  // Toggle: main photo = the finished tattoo by default; tap to swap the
+  // user's original selfie into the main slot. The OTHER one always
+  // appears as the small tilted polaroid attachment in the upper-left.
+  const [showBefore, setShowBefore] = useState(false);
 
   useEffect(() => {
     setTyped('');
     setSkipped(false);
+    setShowBefore(false);
     const target = reading.meaning;
     let i = 0;
     const id = setInterval(() => {
@@ -50,13 +55,32 @@ export default function VerdictScreen({
     `${tattoo.ticketNumber} · ${tattoo.signedDate} · ` +
     `${placementLabel(reading.placement)} · ${styleLabel(reading.style)}`;
 
+  // Main = whichever is currently "front"; inset = the other.
+  const mainUrl = showBefore ? tattoo.selfieUrl : tattoo.imageUrl;
+  const insetUrl = showBefore ? tattoo.imageUrl : tattoo.selfieUrl;
+  const mainLabel = showBefore ? t('result_before') : t('result_after');
+  const insetLabel = showBefore ? t('result_after') : t('result_before');
+
+  const swap = () => setShowBefore((b) => !b);
+
   return (
     <div className="iof-verdict">
-      <div className="iof-verdict__photo">
-        <img src={tattoo.imageUrl} alt={reading.tattoo_description} />
+      <div className="iof-verdict__photo" onPointerDown={swap} role="button" tabIndex={-1}>
+        <img src={mainUrl} alt={reading.tattoo_description} />
         <div className="iof-verdict__photo-stamp">
           INK OF FATE · {tattoo.signedDate}
         </div>
+        <div className="iof-verdict__photo-tag">{mainLabel}</div>
+
+        {/* Tilted polaroid attachment — the original selfie when we're
+            showing the tattoo, or vice versa. The whole photo container
+            is tappable to swap, so this is presented as a label only. */}
+        <div className="iof-verdict__attachment" aria-hidden>
+          <img src={insetUrl} alt="" />
+          <div className="iof-verdict__attachment-label">{insetLabel}</div>
+        </div>
+
+        <div className="iof-verdict__swap-hint">{t('result_tap_to_swap')}</div>
       </div>
 
       <div className="iof-verdict__reaction">
