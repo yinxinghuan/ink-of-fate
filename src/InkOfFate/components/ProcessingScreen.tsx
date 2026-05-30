@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { t } from '../i18n';
+import { startBuzz, stopBuzz } from '../utils/audio';
 import type { Stage } from '../hooks/useFateGen';
 
 interface Props {
@@ -35,6 +36,20 @@ export default function ProcessingScreen({ stage, ticketNumber }: Props) {
     }, 420);
     return () => clearInterval(id);
   }, []);
+
+  // Tattoo gun buzz while the needle is "working" — runs the whole
+  // processing phase, cuts immediately on unmount (reveal). AudioContext
+  // is already unlocked because the player tapped Mark-me to get here.
+  useEffect(() => {
+    startBuzz();
+    return () => stopBuzz();
+  }, []);
+
+  // Hard-cut the buzz at the 'stamping' stage so the silence underscores
+  // the "Done. Hold still" beat right before the verdict reveal.
+  useEffect(() => {
+    if (stage === 'stamping') stopBuzz();
+  }, [stage]);
   const key = STAGE_KEY[stage] || 'processing_sourcing';
   const step = STAGE_STEP[stage] ?? 0;
   // Visible fill: completed steps full + a soft 50% glow on the active
