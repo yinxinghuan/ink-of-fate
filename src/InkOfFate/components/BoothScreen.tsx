@@ -27,24 +27,25 @@ export default function BoothScreen({
 
       <div className="iof-booth__ctas">
         <button
-          className="iof-cta iof-cta--neon"
+          className="iof-booth__cta iof-booth__cta--primary"
           onPointerDown={onStepIn}
           type="button"
         >
-          {t('booth_step_in')}
+          <span className="iof-booth__cta-label">{t('booth_step_in')}</span>
+          <span className="iof-booth__cta-sub">{t('booth_open_since')}</span>
         </button>
         <button
-          className="iof-cta iof-booth__wall-cta"
+          className="iof-booth__cta iof-booth__cta--secondary"
           onPointerDown={onWall}
           type="button"
         >
-          {t('wall_title')} →
+          <span className="iof-booth__cta-label">{t('wall_title')}</span>
+          <span className="iof-booth__cta-sub">
+            {bookedTonight > 0
+              ? t('booth_clients_today', { n: bookedTonight })
+              : t('wall_sub')}
+          </span>
         </button>
-      </div>
-
-      <div className="iof-booth__meta">
-        <div>{t('booth_open_since')}</div>
-        {bookedTonight > 0 && <div>{t('booth_clients_today', { n: bookedTonight })}</div>}
       </div>
 
       {!hasFirstTouched && (
