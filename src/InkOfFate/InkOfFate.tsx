@@ -68,7 +68,19 @@ export default function InkOfFate() {
   const [hasFirstTouched, setHasFirstTouched] = useState(false);
   const [cameFromWall, setCameFromWall] = useState(false);
   const [authorOfCurrent, setAuthorOfCurrent] = useState<string | undefined>();
-  const [localExtra, setLocalExtra] = useState<Tattoo[]>([]);
+
+  // Local mirror of the save — useGameSave.savedData does NOT update after
+  // persist(), so without a mirror the wall MINE tab + ownTattoos count
+  // stay stale post-publish (display-incomplete bug). Pattern: seed mirror
+  // ONCE from savedData when it first loads (undefined → null|data), then
+  // treat mirror as the source of truth and call persist() as a side-effect.
+  // See feedback_useGameSave_local_mirror.md.
+  const [mirror, setMirror] = useState<InkOfFateSave | undefined>(undefined);
+  useEffect(() => {
+    if (mirror === undefined && savedData !== undefined) {
+      setMirror(savedData ?? { tattoos: [] });
+    }
+  }, [savedData, mirror]);
 
   // ─── Demo overrides ──────────────────────────────────────────
   useEffect(() => {
@@ -126,8 +138,8 @@ export default function InkOfFate() {
     return () => document.removeEventListener('pointerdown', onTap, true);
   }, []);
 
-  const bookedCount = (savedData?.tattoos?.length ?? 0) + localExtra.length;
-  const ownTattoos: Tattoo[] = [...localExtra, ...(savedData?.tattoos ?? [])];
+  const ownTattoos: Tattoo[] = mirror?.tattoos ?? [];
+  const bookedCount = ownTattoos.length;
 
   const handleStepIn = () => {
     setErrorLabel('');
@@ -147,9 +159,14 @@ export default function InkOfFate() {
       setCurrent(t);
       setAuthorOfCurrent(undefined);
       setPhase('result');
-      const nextTs = prependTattoo(savedData?.tattoos, t);
-      persist({ tattoos: nextTs });
-      setLocalExtra((prev) => [t, ...prev].slice(0, 12));
+      // Write to local mirror first (source of truth for UI), then
+      // persist() as side-effect so the wall MINE tab sees the new
+      // tattoo immediately without waiting for the cloud sync.
+      const nextSave: InkOfFateSave = {
+        tattoos: prependTattoo(mirror?.tattoos, t),
+      };
+      setMirror(nextSave);
+      persist(nextSave);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setErrorLabel(`${t('err_processing')} (${msg.slice(0, 100)})`);

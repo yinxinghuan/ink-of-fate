@@ -31,7 +31,21 @@ export default function ParlorWall({
     tattoo: t,
   }));
 
-  const list = scope === 'all' ? entries : mineEntries;
+  // Optimistic merge for ALL view — useGameSave.persist() is debounced
+  // ~1s and the cloud RTT adds another second or two, so a just-published
+  // tattoo lives in `mine` (local mirror) for 1-3s before `entries` from
+  // useGallery returns it. Without this merge, the user finishes the
+  // verdict, taps "Tonight's Marked", and doesn't see their own publish
+  // → "发表后的内容展示不全" bug. Dedupe by tattoo.id so the same entry
+  // doesn't double-render once cloud sync catches up (same tattoo appears
+  // as 'me' before sync and real telegram_id after).
+  const allEntries: WallEntry[] = (() => {
+    const seen = new Set(mineEntries.map((m) => m.tattoo.id));
+    return [...mineEntries, ...entries.filter((e) => !seen.has(e.tattoo.id))]
+      .sort((a, b) => (b.tattoo.createdAt ?? 0) - (a.tattoo.createdAt ?? 0));
+  })();
+
+  const list = scope === 'all' ? allEntries : mineEntries;
   const count = list.length;
   const visibleEmpty =
     loaded && list.length === 0
