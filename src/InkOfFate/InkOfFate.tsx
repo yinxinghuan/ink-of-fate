@@ -77,6 +77,11 @@ export default function InkOfFate() {
     else if (demo === 'processing' || demo === 'loading') {
       setPendingTicket('IOF-03142');
       setPhase('processing');
+    } else if (demo === 'inking') {
+      // Like 'processing' but seeds the partial reading so the demo can
+      // showcase the inking animation + commentary together.
+      setPendingTicket('IOF-03142');
+      setPhase('processing');
     } else if (demo === 'result' || demo === 'poster') {
       setCurrent(DEMO_TATTOO);
       setPhase('result');
@@ -212,7 +217,20 @@ export default function InkOfFate() {
         />
       )}
       {phase === 'processing' && pendingTicket && (
-        <ProcessingScreen stage={fateGen.stage} ticketNumber={pendingTicket} />
+        <ProcessingScreen
+          stage={demo === 'inking' ? 'inking' : fateGen.stage}
+          ticketNumber={pendingTicket}
+          reading={
+            demo === 'inking' || demo === 'processing'
+              ? fateGen.partialReading ?? (demo === 'inking' ? DEMO_TATTOO.reading : null)
+              : fateGen.partialReading
+          }
+          selfieUrl={
+            demo === 'inking' || demo === 'processing'
+              ? fateGen.partialSelfieUrl ?? DEMO_TATTOO.selfieUrl
+              : fateGen.partialSelfieUrl
+          }
+        />
       )}
       {phase === 'result' && current && (
         <VerdictScreen

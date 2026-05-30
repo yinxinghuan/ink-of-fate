@@ -232,23 +232,40 @@ export function buildTattooImagePrompt(reading: FateReading): string {
   const placement = PLACEMENT_LABEL[reading.placement];
   const styleVisual = STYLE_VISUAL[reading.style];
   return [
-    `Close, photographic portrait crop of the subject from the reference photo,`,
-    `the subject is exactly as shown in the reference (do not change identity,`,
-    `face, skin tone, or hair).`,
+    // ── IDENTITY LOCK ──
+    // Framed as a one-edit photo retouch, not a new portrait. The same
+    // emphatic pattern the pet-filter "hybrid" prompt used to hold faces.
+    `Photo EDIT, NOT a new portrait. The subject in the reference image`,
+    `is a real person — KEEP their EXACT facial structure, eye shape and`,
+    `placement, eyebrows, nose, mouth, jawline, hairline, hair color and`,
+    `style, skin tone, age, gender expression, and pose. The result must`,
+    `be obviously, unmistakably the SAME PERSON from the reference photo,`,
+    `recognizable at first glance — friends and family must instantly`,
+    `identify them. Do NOT regenerate the face. Do NOT swap to a generic`,
+    `model. Do NOT idealize or stylize the face.`,
     ``,
-    `On the ${placement} the subject now has a freshly inked tattoo:`,
-    `${reading.tattoo_description}.`,
-    `The tattoo style is ${styleVisual}.`,
-    `Tattoo is visibly fresh — skin slightly pink and shiny around the design,`,
-    `tiny highlights from the parlor lamp, ink is deep, edges clean.`,
+    // ── THE ONE EDIT ──
+    `The only change vs the reference: ON the ${placement}, ADD a`,
+    `freshly inked tattoo: ${reading.tattoo_description}. The tattoo is`,
+    `the ONLY new element. Everything else — face, head, body, clothing,`,
+    `background — stays as in the reference.`,
     ``,
-    `Setting: dim late-night tattoo parlor, warm amber tungsten lamp from above-left,`,
-    `cool neon pink-and-cyan rim light bleeding from a buzzing sign just out of frame.`,
-    `Background is dark and out of focus: vinyl chair, framed flash sheets,`,
-    `dusty mirrors. Cinematic, 35mm film grain, shallow depth of field,`,
-    `slight chromatic aberration, true-to-life skin texture.`,
+    // ── INK ──
+    `Tattoo rendering: ${styleVisual}. Ink is visibly fresh — skin`,
+    `slightly pink and shiny around the design, tiny lamp highlights on`,
+    `the wet ink, lines are deep and clean. The tattoo sits ON the skin,`,
+    `following the natural contour of the ${placement}, with subtle`,
+    `shadow where the design crosses skin folds.`,
     ``,
-    `No watermark, no text overlay other than what is on the tattoo design.`,
+    // ── LIGHTING ──
+    `Light the scene like a dim late-night tattoo parlor: warm amber`,
+    `tungsten lamp from above-left, cool neon pink-and-cyan rim light`,
+    `from a buzzing sign just out of frame. Subtle 35mm film grain,`,
+    `shallow depth of field, true-to-life skin texture. Same crop as the`,
+    `reference photo if reasonable.`,
+    ``,
+    `No watermark, no text overlay other than what is on the tattoo`,
+    `design. No new logos.`,
   ].join(' ');
 }
 

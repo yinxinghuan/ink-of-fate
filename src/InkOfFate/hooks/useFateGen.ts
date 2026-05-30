@@ -50,6 +50,12 @@ export interface UseFateGen {
   generate: (input: GenInput) => Promise<Tattoo>;
   loading: boolean;
   stage: Stage;
+  /** Populated once the LLM call returns (end of `studying`). Lets the
+   *  processing screen show the artist's reading while gen-image is
+   *  still in flight (`inking`) so the user has something to read. */
+  partialReading: FateReading | null;
+  /** The selfie URL used as ref. Available from the end of `sourcing`. */
+  partialSelfieUrl: string | null;
   error: Error | null;
 }
 
@@ -60,6 +66,8 @@ export function useFateGen(): UseFateGen {
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState<Stage>('');
   const [error, setError] = useState<Error | null>(null);
+  const [partialReading, setPartialReading] = useState<FateReading | null>(null);
+  const [partialSelfieUrl, setPartialSelfieUrl] = useState<string | null>(null);
   const inFlight = useRef(false);
 
   const generate = useCallback(
@@ -68,20 +76,22 @@ export function useFateGen(): UseFateGen {
       inFlight.current = true;
       setLoading(true);
       setError(null);
+      setPartialReading(null);
+      setPartialSelfieUrl(null);
 
       try {
-        // 1) Source the selfie URL. Either upload a fresh file, or use the
-        //    Aigram avatar URL directly (already public HTTPS).
+        // 1) Source the selfie URL.
         setStage('sourcing');
         const selfieUrl = await sourceSelfieUrl(source, upload);
+        setPartialSelfieUrl(selfieUrl);
 
-        // 2) Chat — single call returns JSON. Use the question (if any) and
-        //    a fresh seed so the verdict varies between runs.
+        // 2) Chat — single call returns JSON.
         setStage('studying');
         const seed = newSeed();
         const userTurn = buildFateUserPrompt({ question, seed });
         const raw = await chatOnce(FATE_SYSTEM, userTurn);
         const reading: FateReading = parseFateReading(raw);
+        setPartialReading(reading);
 
         // 3) Image — img2img with the selfie ref + scene-only prompt.
         setStage('inking');
@@ -116,7 +126,7 @@ export function useFateGen(): UseFateGen {
     [genImg, upload],
   );
 
-  return { generate, loading, stage, error };
+  return { generate, loading, stage, partialReading, partialSelfieUrl, error };
 }
 
 async function sourceSelfieUrl(

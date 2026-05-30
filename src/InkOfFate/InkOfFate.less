@@ -208,12 +208,74 @@
   justify-content: flex-start;
   padding: 22px 18px 28px;
 
-  &__sign-wrap {
+  // Hero — TikTok-style swipe-list landing has only ~1s before the player
+  // swipes away. The painted scene alone doesn't sell the gameplay; the
+  // hero band carries the brand + the value prop in plain language so a
+  // first-time visitor instantly knows "this is where I get an AI tattoo
+  // from a biker artist."
+  &__top-darken {
     position: absolute;
-    z-index: 3;
-    top: 22px;
-    left: 50%;
-    transform: translateX(-50%);
+    inset: 0 0 50% 0;
+    background:
+      linear-gradient(180deg, fade(@parlor-black, 75%) 0%, fade(@parlor-black, 35%) 60%, transparent 100%);
+    pointer-events: none;
+  }
+  &__hero {
+    position: absolute;
+    z-index: 4;
+    top: 6vh;
+    left: 18px;
+    right: 18px;
+    text-align: center;
+    pointer-events: none;
+  }
+  &__hero-title {
+    font-family: @font-head;
+    font-size: clamp(46px, 13vw, 76px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: @parchment;
+    text-shadow:
+      0 0 6px fade(@neon-pink, 100%),
+      0 0 18px fade(@neon-pink, 90%),
+      0 0 44px fade(@neon-pink, 60%),
+      0 0 90px fade(@neon-pink, 35%),
+      0 4px 12px rgba(0,0,0,0.85);
+    animation: iof-neon-flicker 6s linear infinite;
+  }
+  &__hero-rule {
+    width: 56%;
+    max-width: 220px;
+    height: 8px;
+    margin: 12px auto 14px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      fade(@neon-cyan, 65%) 18%,
+      fade(@neon-cyan, 95%) 50%,
+      fade(@neon-cyan, 65%) 82%,
+      transparent 100%);
+    filter: blur(0.6px);
+    box-shadow: 0 0 14px fade(@neon-cyan, 70%);
+    border-radius: 2px;
+  }
+  &__hero-pitch-top {
+    font-family: @font-body;
+    font-size: clamp(16px, 4.6vw, 22px);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: @parchment;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.85), 0 0 18px fade(@amber, 22%);
+    margin-bottom: 6px;
+  }
+  &__hero-pitch-bot {
+    font-family: @font-body;
+    font-size: clamp(13px, 3.8vw, 16px);
+    letter-spacing: 0.06em;
+    color: fade(@parchment, 85%);
+    line-height: 1.4;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.85);
+    max-width: 360px;
+    margin: 0 auto;
   }
 
   // Bottom action band — dark gradient anchored to the floor, two big
@@ -434,22 +496,21 @@
     cursor: pointer;
   }
 
-  &__mark-row {
-    display: flex;
-    gap: 14px;
-    align-items: stretch;
-    margin-bottom: 14px;
-  }
-  &__mark-q {
-    flex: 1 1 auto;
-    min-width: 0;
+  &__mark-stage {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 8px;
+    align-items: center;
+    gap: 26px;
+    margin: 6vh auto 0;
+    max-width: 520px;
+    width: 100%;
+    padding: 0 18px 0;
   }
   &__mark-cta {
     width: 100%;
+    margin-top: 14px;
   }
 
   &__preview {
@@ -464,6 +525,22 @@
     width: 156px;
     height: 156px;
     border-radius: 50%;
+  }
+  &__preview--hero {
+    width: 188px;
+    height: 188px;
+    border-radius: 50%;
+    background: @parlor-brick;
+    padding: 0;
+    cursor: pointer;
+    border-color: fade(@neon-pink, 70%);
+    box-shadow:
+      0 0 0 4px fade(@neon-pink, 22%),
+      0 0 28px fade(@neon-pink, 45%),
+      0 12px 36px rgba(0,0,0,0.7);
+    margin: 0 auto;
+    display: block;
+    &:active { transform: scale(0.97); }
   }
   &__preview--sm {
     flex: 0 0 72px;
@@ -491,6 +568,13 @@
     border-radius: 999px;
     white-space: nowrap;
     text-shadow: 0 0 6px fade(@neon-pink, 60%);
+  }
+  &__change-badge--hero {
+    bottom: -16px;
+    font-size: 10px;
+    padding: 4px 12px;
+    border: 1px solid fade(@neon-pink, 40%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   }
   &__preview-img {
     width: 100%;
@@ -583,71 +667,261 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 24px 60px;
-
-  &__stage {
-    text-align: center;
-    z-index: 2;
-    background: fade(@parlor-black, 65%);
-    padding: 18px 22px;
-    border: 1px solid fade(@parchment, 16%);
-    border-radius: 4px;
-    backdrop-filter: blur(4px);
-    max-width: 420px;
-    width: 100%;
-  }
-  &__typed {
-    font-family: @font-body;
-    font-size: 17px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: @parchment;
-    text-shadow: 0 0 8px fade(@amber, 40%);
-    margin-bottom: 10px;
-    animation: iof-proc-pulse 1.6s ease-in-out infinite;
-  }
-  &__progress {
-    width: 100%;
-    height: 4px;
-    background: fade(@parchment, 14%);
-    border-radius: 2px;
-    overflow: hidden;
-    margin: 14px 0 12px;
-    position: relative;
-  }
-  &__progress-fill {
-    height: 100%;
-    background: linear-gradient(to right, @neon-pink, @neon-cyan);
-    border-radius: 2px;
-    box-shadow: 0 0 6px fade(@neon-pink, 70%);
-    transition: width 480ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  &__ticket {
-    font-family: @font-body;
-    font-size: 11px;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: fade(@parchment, 60%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    strong {
-      color: @neon-cyan;
-      font-weight: normal;
-      text-shadow: 0 0 4px fade(@neon-cyan, 60%);
-    }
-  }
-  &__step {
-    color: fade(@parchment, 45%);
-    letter-spacing: 0.18em;
-  }
+  padding: 22px 16px 28px;
+  background:
+    radial-gradient(ellipse at 50% 35%, fade(@parlor-crimson, 35%) 0%, transparent 55%),
+    linear-gradient(180deg, @parlor-deep 0%, @parlor-black 100%);
+  color: @parchment;
+  gap: 14px;
 }
 
+.iof-proc__lamp {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 28%, fade(@amber, 18%) 0%, transparent 38%);
+  pointer-events: none;
+  animation: iof-proc-lamp 5s ease-in-out infinite;
+}
+@keyframes iof-proc-lamp {
+  0%, 100% { opacity: 0.92; }
+  46%      { opacity: 0.62; }
+  52%      { opacity: 1.0; }
+}
+
+.iof-proc__stage-label {
+  position: relative;
+  z-index: 2;
+  font-family: @font-body;
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: @parchment;
+  text-shadow: 0 0 8px fade(@amber, 50%);
+  text-align: center;
+  animation: iof-proc-pulse 1.6s ease-in-out infinite;
+  margin-bottom: 2px;
+}
 @keyframes iof-proc-pulse {
-  0%, 100% { opacity: 0.85; }
+  0%, 100% { opacity: 0.7; }
   50%      { opacity: 1; }
+}
+
+// Canvas + gun composition — the "scene". Skin patch in the middle, gun
+// hovering over it, ink dots forming under the needle path.
+.iof-proc__canvas-stage {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 4 / 3;
+  z-index: 2;
+}
+.iof-proc__canvas {
+  position: absolute;
+  inset: 12px 0 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #c89478;
+  border: 2px solid fade(#000, 50%);
+  box-shadow:
+    0 14px 36px rgba(0,0,0,0.6),
+    inset 0 0 40px fade(#000, 35%);
+}
+.iof-proc__canvas-skin {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: blur(2px) brightness(0.75) saturate(0.85);
+  &--default {
+    background:
+      radial-gradient(ellipse at 35% 30%, #d8a280 0%, #b8765c 60%, #6a3018 100%);
+  }
+}
+.iof-proc__canvas-wash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 60%, fade(@neon-pink, 22%) 0%, transparent 55%),
+    linear-gradient(180deg, fade(#000, 15%) 0%, fade(#000, 55%) 100%);
+  pointer-events: none;
+}
+
+// Ink trail — 18 small dots emerging in sequence to mimic a line being
+// drawn under the needle path. Arranged in a slight S-curve.
+.iof-proc__ink-trail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.iof-proc__ink-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: #0a0204;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 4px rgba(0,0,0,0.6), 0 0 10px fade(@neon-pink, 25%);
+  animation: iof-ink-appear 7.2s ease-out infinite;
+}
+// Position each dot along an S-curve across the canvas.
+.iof-proc__ink-dot:nth-child(1)  { left: 14%; top: 64%; }
+.iof-proc__ink-dot:nth-child(2)  { left: 19%; top: 60%; }
+.iof-proc__ink-dot:nth-child(3)  { left: 24%; top: 56%; }
+.iof-proc__ink-dot:nth-child(4)  { left: 29%; top: 52%; }
+.iof-proc__ink-dot:nth-child(5)  { left: 34%; top: 49%; }
+.iof-proc__ink-dot:nth-child(6)  { left: 39%; top: 47%; }
+.iof-proc__ink-dot:nth-child(7)  { left: 44%; top: 47%; }
+.iof-proc__ink-dot:nth-child(8)  { left: 49%; top: 48%; }
+.iof-proc__ink-dot:nth-child(9)  { left: 54%; top: 50%; }
+.iof-proc__ink-dot:nth-child(10) { left: 59%; top: 53%; }
+.iof-proc__ink-dot:nth-child(11) { left: 64%; top: 55%; }
+.iof-proc__ink-dot:nth-child(12) { left: 69%; top: 56%; }
+.iof-proc__ink-dot:nth-child(13) { left: 74%; top: 55%; }
+.iof-proc__ink-dot:nth-child(14) { left: 79%; top: 52%; }
+.iof-proc__ink-dot:nth-child(15) { left: 82%; top: 48%; }
+.iof-proc__ink-dot:nth-child(16) { left: 84%; top: 44%; }
+.iof-proc__ink-dot:nth-child(17) { left: 86%; top: 40%; }
+.iof-proc__ink-dot:nth-child(18) { left: 88%; top: 36%; }
+@keyframes iof-ink-appear {
+  0%, 12% { opacity: 0; transform: scale(0.4); }
+  20%     { opacity: 1; transform: scale(1.15); }
+  35%, 92% { opacity: 0.85; transform: scale(1); }
+  100%    { opacity: 0.85; transform: scale(1); }
+}
+
+// SVG gun — hovers over the canvas in a slow pass + buzz jitter.
+.iof-proc__gun {
+  position: absolute;
+  width: 180px;
+  height: auto;
+  top: -28px;
+  left: 14%;
+  filter: drop-shadow(0 14px 12px rgba(0,0,0,0.7));
+  animation:
+    iof-gun-pass 7.2s ease-in-out infinite,
+    iof-gun-buzz 0.08s linear infinite;
+  z-index: 3;
+  transform-origin: 100% 50%;
+}
+@keyframes iof-gun-pass {
+  0%   { left: 6%; }
+  45%  { left: 56%; }
+  55%  { left: 56%; }
+  100% { left: 6%; }
+}
+@keyframes iof-gun-buzz {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50%      { transform: translate(0.6px, -0.6px) rotate(0.4deg); }
+}
+
+.iof-proc__placement-tag {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-family: @font-body;
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: @parchment;
+  background: fade(@parlor-black, 80%);
+  border: 1px solid fade(@neon-cyan, 60%);
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-shadow: 0 0 4px fade(@neon-cyan, 60%);
+  z-index: 4;
+}
+
+// Reading panel — fills the long inking wait with quip + meaning.
+.iof-proc__panel {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+  background: fade(@parlor-black, 70%);
+  border: 1px solid fade(@parchment, 14%);
+  padding: 14px 18px 16px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.iof-proc__pretext {
+  font-family: @font-body;
+  font-style: italic;
+  text-align: center;
+  color: fade(@parchment, 65%);
+  font-size: 14px;
+  padding: 14px 0;
+}
+.iof-proc__quip {
+  font-family: @font-body;
+  font-style: italic;
+  text-align: center;
+  color: @neon-pink;
+  font-size: 15px;
+  line-height: 1.4;
+  text-shadow: 0 0 8px fade(@neon-pink, 30%);
+  margin-bottom: 12px;
+}
+.iof-proc__quote {
+  color: fade(@neon-pink, 50%);
+  font-size: 22px;
+  line-height: 0;
+  vertical-align: -4px;
+  padding: 0 2px;
+}
+.iof-proc__meaning {
+  font-family: @font-body;
+  font-size: 14px;
+  line-height: 1.6;
+  color: fade(@parchment, 92%);
+  white-space: pre-wrap;
+  min-height: 1.6em;
+}
+
+// Footer — progress + ticket pinned at bottom of phase.
+.iof-proc__footer {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+}
+.iof-proc__progress {
+  width: 100%;
+  height: 4px;
+  background: fade(@parchment, 14%);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  position: relative;
+}
+.iof-proc__progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, @neon-pink, @neon-cyan);
+  border-radius: 2px;
+  box-shadow: 0 0 6px fade(@neon-pink, 70%);
+  transition: width 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.iof-proc__ticket {
+  font-family: @font-body;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: fade(@parchment, 55%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  strong {
+    color: @neon-cyan;
+    font-weight: normal;
+    text-shadow: 0 0 4px fade(@neon-cyan, 60%);
+  }
+}
+.iof-proc__step {
+  color: fade(@parchment, 45%);
+  letter-spacing: 0.18em;
 }
 
 // ─── Verdict ───────────────────────────────────────────────────────────
@@ -893,6 +1167,39 @@
     line-height: 1.5;
   }
 
+  &__reading-toggle {
+    width: 100%;
+    background: none;
+    border: 1px solid fade(@ink-black, 35%);
+    border-radius: 3px;
+    color: fade(@ink-black, 75%);
+    font-family: @font-body;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    padding: 11px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    user-select: none;
+    transition: background 140ms ease, border-color 140ms ease;
+    &:active { transform: scale(0.99); }
+    &--open {
+      background: fade(@ink-black, 8%);
+      border-color: @ink-black;
+      color: @ink-black;
+    }
+  }
+  &__reading-chevron {
+    font-size: 14px;
+    line-height: 1;
+    transition: transform 180ms ease;
+  }
+  &__reading-toggle--open &__reading-chevron {
+    transform: rotate(0deg);
+  }
   &__reading-label {
     font-family: @font-body;
     font-size: 10px;
@@ -906,11 +1213,21 @@
     font-size: 14.5px;
     line-height: 1.6;
     color: @ink-black;
-    margin-bottom: 18px;
+    margin: 12px 0 18px;
     min-height: 1.6em;
     white-space: pre-wrap;
     cursor: pointer;
     user-select: none;
+    padding: 12px 14px;
+    background: fade(@ink-black, 6%);
+    border-radius: 3px;
+  }
+  &__reading--enter {
+    animation: iof-verdict-reading-in 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes iof-verdict-reading-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   &__invoice {

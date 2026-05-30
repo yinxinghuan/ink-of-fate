@@ -27,35 +27,49 @@ export default function VerdictScreen({
   const { reading } = tattoo;
   const [typed, setTyped] = useState('');
   const [skipped, setSkipped] = useState(false);
-  // Toggle: main photo = the finished tattoo by default; tap to swap the
-  // user's original selfie into the main slot. The OTHER one always
-  // appears as the small tilted polaroid attachment in the upper-left.
+  // Toggle: main photo = the finished tattoo by default; tap to swap.
   const [showBefore, setShowBefore] = useState(false);
+  // Detailed reading is collapsed by default; tap the chevron to expand.
+  // First expand triggers the typewriter; subsequent toggles just show /
+  // hide the already-typed text.
+  const [readingOpen, setReadingOpen] = useState(false);
+  const [readingTouched, setReadingTouched] = useState(false);
 
   useEffect(() => {
     setTyped('');
     setSkipped(false);
     setShowBefore(false);
+    setReadingOpen(false);
+    setReadingTouched(false);
+  }, [reading.meaning]);
+
+  // Only start the typewriter once the user opens the reading panel.
+  useEffect(() => {
+    if (!readingOpen || !readingTouched) return;
+    if (typed.length >= reading.meaning.length) return;
     const target = reading.meaning;
-    let i = 0;
+    let i = typed.length;
     const id = setInterval(() => {
       i++;
       setTyped(target.slice(0, i));
       if (i >= target.length) clearInterval(id);
     }, 14);
     return () => clearInterval(id);
-  }, [reading.meaning]);
+  }, [readingOpen, readingTouched, reading.meaning, typed.length]);
 
   const readingText = skipped ? reading.meaning : typed;
   const skipTypewriter = () => {
     if (typed.length < reading.meaning.length) setSkipped(true);
+  };
+  const toggleReading = () => {
+    setReadingTouched(true);
+    setReadingOpen((o) => !o);
   };
 
   const metaLine =
     `${tattoo.ticketNumber} · ${tattoo.signedDate} · ` +
     `${placementLabel(reading.placement)} · ${styleLabel(reading.style)}`;
 
-  // Main = whichever is currently "front"; inset = the other.
   const mainUrl = showBefore ? tattoo.selfieUrl : tattoo.imageUrl;
   const insetUrl = showBefore ? tattoo.imageUrl : tattoo.selfieUrl;
   const mainLabel = showBefore ? t('result_before') : t('result_after');
@@ -71,15 +85,10 @@ export default function VerdictScreen({
           INK OF FATE · {tattoo.signedDate}
         </div>
         <div className="iof-verdict__photo-tag">{mainLabel}</div>
-
-        {/* Tilted polaroid attachment — the original selfie when we're
-            showing the tattoo, or vice versa. The whole photo container
-            is tappable to swap, so this is presented as a label only. */}
         <div className="iof-verdict__attachment" aria-hidden>
           <img src={insetUrl} alt="" />
           <div className="iof-verdict__attachment-label">{insetLabel}</div>
         </div>
-
         <div className="iof-verdict__swap-hint">{t('result_tap_to_swap')}</div>
       </div>
 
@@ -108,15 +117,30 @@ export default function VerdictScreen({
 
           <div className="iof-verdict__meta-line">{metaLine}</div>
 
-          <div className="iof-verdict__reading-label">{t('result_meaning')}</div>
-          <div
-            className="iof-verdict__reading"
-            onPointerDown={skipTypewriter}
-            role="button"
-            tabIndex={-1}
+          <button
+            type="button"
+            className={
+              'iof-verdict__reading-toggle ' +
+              (readingOpen ? 'iof-verdict__reading-toggle--open' : '')
+            }
+            onPointerDown={toggleReading}
           >
-            {readingText || ' '}
-          </div>
+            <span>{readingOpen ? t('result_collapse') : t('result_read_more')}</span>
+            <span className="iof-verdict__reading-chevron" aria-hidden>
+              {readingOpen ? '▾' : '▸'}
+            </span>
+          </button>
+
+          {readingOpen && (
+            <div
+              className="iof-verdict__reading iof-verdict__reading--enter"
+              onPointerDown={skipTypewriter}
+              role="button"
+              tabIndex={-1}
+            >
+              {readingText || ' '}
+            </div>
+          )}
 
           <div className="iof-verdict__invoice">{t('result_invoice')}</div>
         </div>

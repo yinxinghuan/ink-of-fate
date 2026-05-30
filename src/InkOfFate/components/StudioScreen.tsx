@@ -110,42 +110,44 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
       )}
 
       {step === 'mark' && (
-        <div className="iof-studio__sheet iof-studio__sheet--enter">
-          <div className="iof-studio__mark-row">
-            <button
-              type="button"
-              className="iof-studio__preview iof-studio__preview--sm"
-              onPointerDown={handleChangeFace}
-              aria-label={t('studio_change_face')}
-            >
-              {previewSrc ? (
-                <img src={previewSrc} alt="" className="iof-studio__preview-img" />
-              ) : (
-                <div className="iof-studio__preview-placeholder">?</div>
-              )}
-              <span className="iof-studio__change-badge">{t('studio_change_face')}</span>
-            </button>
-
-            <div className="iof-studio__mark-q">
-              <div className="iof-studio__step-label">{t('studio_step_q')}</div>
-              <input
-                className="iof-studio__question"
-                placeholder={t('studio_question')}
-                value={question}
-                maxLength={80}
-                onChange={(e) => setQuestion(e.target.value)}
-              />
-            </div>
-          </div>
-
+        <div className="iof-studio__mark-stage iof-studio__sheet--enter">
+          {/* Hero preview — the user's face stays prominent, not buried.
+              Tap it to go back to step 1 and pick a different photo. */}
           <button
             type="button"
-            className="iof-cta iof-cta--big iof-cta--primary iof-studio__mark-cta"
-            onPointerDown={handleSubmit}
+            className="iof-studio__preview iof-studio__preview--hero"
+            onPointerDown={handleChangeFace}
+            aria-label={t('studio_change_face')}
           >
-            {t('studio_cta')}
+            {previewSrc ? (
+              <img src={previewSrc} alt="" className="iof-studio__preview-img" />
+            ) : (
+              <div className="iof-studio__preview-placeholder">?</div>
+            )}
+            <span className="iof-studio__change-badge iof-studio__change-badge--hero">
+              ↻ {t('studio_change_face')}
+            </span>
           </button>
-          {errorLabel && <div className="iof-studio__error">{errorLabel}</div>}
+
+          <div className="iof-studio__sheet iof-studio__sheet--enter">
+            <div className="iof-studio__step-label">{t('studio_step_q')}</div>
+            <input
+              className="iof-studio__question"
+              placeholder={t('studio_question')}
+              value={question}
+              maxLength={80}
+              onChange={(e) => setQuestion(e.target.value)}
+            />
+
+            <button
+              type="button"
+              className="iof-cta iof-cta--big iof-cta--primary iof-studio__mark-cta"
+              onPointerDown={handleSubmit}
+            >
+              {t('studio_cta')}
+            </button>
+            {errorLabel && <div className="iof-studio__error">{errorLabel}</div>}
+          </div>
         </div>
       )}
     </div>

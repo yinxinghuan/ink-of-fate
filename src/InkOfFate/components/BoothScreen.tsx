@@ -1,5 +1,4 @@
 import { t } from '../i18n';
-import NeonSign from './NeonSign';
 
 interface Props {
   bookedTonight: number;
@@ -19,11 +18,15 @@ export default function BoothScreen({
       <div className="iof-scene-bg" aria-hidden>
         <img src={import.meta.env.BASE_URL + 'scenes/scene_booth.jpg'} alt="" />
         <div className="iof-scene-bg__vignette" />
+        <div className="iof-booth__top-darken" />
       </div>
 
-      <div className="iof-booth__sign-wrap">
-        <NeonSign small />
-      </div>
+      <header className="iof-booth__hero">
+        <div className="iof-booth__hero-title">INK OF FATE</div>
+        <div className="iof-booth__hero-rule" aria-hidden />
+        <div className="iof-booth__hero-pitch-top">{t('booth_pitch_top')}</div>
+        <div className="iof-booth__hero-pitch-bot">{t('booth_pitch_bot')}</div>
+      </header>
 
       <div className="iof-booth__ctas">
         <button
