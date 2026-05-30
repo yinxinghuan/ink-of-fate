@@ -22,7 +22,7 @@ export default function BoothScreen({
       </div>
 
       <div className="iof-booth__sign-wrap">
-        <NeonSign />
+        <NeonSign small />
       </div>
 
       <button

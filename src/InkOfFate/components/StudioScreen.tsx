@@ -56,22 +56,21 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
         ← {t('studio_back')}
       </button>
 
-      <div className="iof-studio__inner iof-studio__inner--panel">
-        <p className="iof-studio__intro">{t('studio_artist_intro')}</p>
+      <p className="iof-studio__intro">{t('studio_artist_intro')}</p>
 
-        <section className="iof-studio__section">
-          <h3 className="iof-studio__heading">{t('studio_face_section')}</h3>
+      <div className="iof-studio__sheet">
+        <div className="iof-studio__face-row">
+          <div className="iof-studio__preview">
+            {previewSrc ? (
+              <img src={previewSrc} alt="" className="iof-studio__preview-img" />
+            ) : (
+              <div className="iof-studio__preview-placeholder">?</div>
+            )}
+          </div>
 
-          <div className="iof-studio__face-row">
-            <div className="iof-studio__preview">
-              {previewSrc ? (
-                <img src={previewSrc} alt="" className="iof-studio__preview-img" />
-              ) : (
-                <div className="iof-studio__preview-placeholder">?</div>
-              )}
-            </div>
-
-            <div className="iof-studio__face-actions">
+          <div className="iof-studio__face-actions">
+            <div className="iof-studio__heading">{t('studio_face_section')}</div>
+            <div className="iof-studio__face-chips">
               {profile?.avatarUrl && (
                 <button
                   type="button"
@@ -84,7 +83,12 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
                   {t('studio_use_my_avatar')}
                 </button>
               )}
-              <label className="iof-chip iof-chip--upload">
+              <label
+                className={
+                  'iof-chip iof-chip--upload ' +
+                  (picked?.kind === 'file' ? 'iof-chip--selected' : '')
+                }
+              >
                 <input
                   ref={fileRef}
                   type="file"
@@ -96,32 +100,27 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
               </label>
             </div>
           </div>
-        </section>
+        </div>
 
-        <section className="iof-studio__section">
-          <h3 className="iof-studio__heading">{t('studio_question')}</h3>
-          <textarea
+        <div className="iof-studio__q-row">
+          <input
             className="iof-studio__question"
             placeholder={t('studio_question_placeholder')}
             value={question}
             maxLength={80}
-            rows={2}
             onChange={(e) => setQuestion(e.target.value)}
           />
-          <div className="iof-studio__count">{question.length}/80</div>
-        </section>
-
-        <div className="iof-studio__cta-wrap">
-          <button
-            type="button"
-            className="iof-cta iof-cta--big"
-            disabled={!picked}
-            onPointerDown={handleSubmit}
-          >
-            {picked ? t('studio_cta_pending') : t('studio_cta_disabled')}
-          </button>
-          {errorLabel && <div className="iof-studio__error">{errorLabel}</div>}
         </div>
+
+        <button
+          type="button"
+          className="iof-cta iof-cta--big iof-cta--primary"
+          disabled={!picked}
+          onPointerDown={handleSubmit}
+        >
+          {picked ? t('studio_cta') : t('studio_cta_disabled')}
+        </button>
+        {errorLabel && <div className="iof-studio__error">{errorLabel}</div>}
       </div>
     </div>
   );
