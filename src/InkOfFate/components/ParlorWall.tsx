@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { t } from '../i18n';
+import { placementLabel, styleLabel } from '../utils/prompts';
 import type { Tattoo, WallEntry } from '../types';
 
 interface Props {
@@ -21,11 +22,8 @@ export default function ParlorWall({
   onView,
   onNew,
 }: Props) {
-  // Default to ALL on landing — per memory rule for wall-as-landing games.
   const [scope, setScope] = useState<Scope>('all');
 
-  // Project the player's own tattoos into the same WallEntry shape so the
-  // render path is identical.
   const mineEntries: WallEntry[] = mine.map((t) => ({
     userId: 'me',
     userName: undefined,
@@ -34,6 +32,7 @@ export default function ParlorWall({
   }));
 
   const list = scope === 'all' ? entries : mineEntries;
+  const count = list.length;
   const visibleEmpty =
     loaded && list.length === 0
       ? scope === 'mine'
@@ -47,9 +46,7 @@ export default function ParlorWall({
         <button type="button" className="iof-wall__back" onPointerDown={onBack}>
           ← {t('wall_back')}
         </button>
-        <div className="iof-wall__title-block">
-          <div className="iof-wall__title">{t('wall_title')}</div>
-        </div>
+        <div className="iof-wall__title">{t('wall_title')}</div>
         <div className="iof-wall__head-spacer" />
       </header>
 
@@ -83,24 +80,39 @@ export default function ParlorWall({
         </button>
       </div>
 
+      {loaded && count > 0 && (
+        <div className="iof-wall__count">
+          {count} {scope === 'mine' ? t('wall_count_mine') : t('wall_count_all')}
+        </div>
+      )}
+
       {!loaded && <div className="iof-wall__loading">{t('wall_loading')}</div>}
       {visibleEmpty && <div className="iof-wall__empty">{visibleEmpty}</div>}
 
       <div className="iof-wall__grid">
-        {list.map((e) => (
+        {list.map((e, i) => (
           <button
             key={`${e.userId}-${e.tattoo.id}`}
             className="iof-wall__card"
             type="button"
             onPointerDown={() => onView(e)}
           >
+            <div className="iof-wall__card-num">{String(i + 1).padStart(2, '0')}</div>
             <div className="iof-wall__card-photo">
               <img src={e.tattoo.imageUrl} alt={e.tattoo.reading.tattoo_description} />
             </div>
             <div className="iof-wall__card-body">
               <div className="iof-wall__card-headline">{e.tattoo.reading.headline}</div>
-              <div className="iof-wall__card-meta">
-                {e.userName ? <span className="iof-wall__card-name">{e.userName}</span> : null}
+              <div className="iof-wall__card-tags">
+                <span className="iof-meta-chip">{styleLabel(e.tattoo.reading.style)}</span>
+                <span className="iof-meta-chip">{placementLabel(e.tattoo.reading.placement)}</span>
+              </div>
+              <div className="iof-wall__card-foot">
+                {e.userName ? (
+                  <span className="iof-wall__card-name">{e.userName}</span>
+                ) : (
+                  <span className="iof-wall__card-name iof-wall__card-name--me">YOU</span>
+                )}
                 <span className="iof-wall__card-ticket">{e.tattoo.ticketNumber}</span>
               </div>
             </div>
@@ -110,7 +122,7 @@ export default function ParlorWall({
 
       <button
         type="button"
-        className="iof-wall__fab iof-cta iof-cta--neon"
+        className="iof-wall__fab"
         onPointerDown={onNew}
       >
         + {t('wall_fab')}

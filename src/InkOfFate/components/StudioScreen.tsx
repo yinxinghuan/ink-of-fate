@@ -73,7 +73,10 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
 
       {step === 'face' && (
         <div className="iof-studio__sheet iof-studio__sheet--enter">
-          <div className="iof-studio__step-label">{t('studio_step_face')}</div>
+          <div className="iof-studio__step-head">
+            <span className="iof-studio__step-num">01</span>
+            <span className="iof-studio__step-label">{t('studio_step_face')}</span>
+          </div>
 
           <div className="iof-studio__face-stage">
             <div className="iof-studio__preview iof-studio__preview--lg">
@@ -130,7 +133,10 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
           </button>
 
           <div className="iof-studio__sheet iof-studio__sheet--enter">
-            <div className="iof-studio__step-label">{t('studio_step_q')}</div>
+            <div className="iof-studio__step-head">
+              <span className="iof-studio__step-num">02</span>
+              <span className="iof-studio__step-label">{t('studio_step_q')}</span>
+            </div>
             <input
               className="iof-studio__question"
               placeholder={t('studio_question')}
