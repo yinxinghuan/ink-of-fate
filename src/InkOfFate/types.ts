@@ -1,17 +1,5 @@
 // ─── Domain types ────────────────────────────────────────────────────────
 
-export type Placement =
-  | 'left-cheek'
-  | 'right-cheek'
-  | 'throat'
-  | 'side-of-neck'
-  | 'behind-ear'
-  | 'forehead'
-  | 'jawline'
-  | 'under-eye'
-  | 'collarbone'
-  | 'temple';
-
 export type TattooStyle =
   | 'sailor-jerry'
   | 'japanese-irezumi'
@@ -34,7 +22,15 @@ export interface FateReading {
   meaning: string;
   /** Short visual description of the design (used downstream in image prompt). */
   tattoo_description: string;
-  placement: Placement;
+  /** Free-form short phrase describing WHERE the tattoo goes on the
+   *  subject. May be a face spot ("left cheek", "throat") if the subject
+   *  is human/cartoon, or a surface ("on the mug, opposite the handle",
+   *  "across the cat's forehead", "on the banana peel") for anything else. */
+  placement: string;
+  /** Free-form short phrase identifying what the subject is. Used so the
+   *  player sees the artist actually clocked what they brought in
+   *  ("a fluffy ginger cat" / "a yellow ceramic mug"). */
+  subject_type: string;
   style: TattooStyle;
   verdict_tone: VerdictTone;
 }

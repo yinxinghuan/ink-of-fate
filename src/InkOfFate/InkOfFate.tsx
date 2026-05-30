@@ -30,7 +30,8 @@ const DEMO_TATTOO: Tattoo = {
       "left on read. Every time you swallow your morning coffee, you'll feel them moving. " +
       "Stop running. Or don't. The centipede's not picky.",
     tattoo_description: 'a long black centipede curling around the throat, 100 small legs',
-    placement: 'throat',
+    placement: 'across the front of the throat',
+    subject_type: 'a young man with tired eyes',
     style: 'stick-and-poke',
     verdict_tone: 'squint',
   },
