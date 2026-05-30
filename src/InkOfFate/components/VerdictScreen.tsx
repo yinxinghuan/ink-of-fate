@@ -81,7 +81,9 @@ export default function VerdictScreen({
       <div className="iof-verdict__hero">
         <div
           className="iof-verdict__photo"
-          onPointerDown={swap}
+          // onClick (not onPointerDown) — verdict page scrolls; pointerdown
+          // on the photo would swap before the user could scroll past it.
+          onClick={swap}
           role="button"
           tabIndex={-1}
         >
@@ -162,7 +164,10 @@ export default function VerdictScreen({
         {readingOpen && (
           <div
             className="iof-verdict__reading"
-            onPointerDown={skipTypewriter}
+            // onClick (not onPointerDown) — reading sits inside the
+            // scrollable verdict page; pointerdown would skip the
+            // typewriter mid-scroll. See feedback_onclick_for_scrollable_lists.md.
+            onClick={skipTypewriter}
             role="button"
             tabIndex={-1}
           >

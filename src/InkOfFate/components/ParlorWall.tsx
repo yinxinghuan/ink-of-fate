@@ -95,7 +95,11 @@ export default function ParlorWall({
             key={`${e.userId}-${e.tattoo.id}`}
             className="iof-wall__card"
             type="button"
-            onPointerDown={() => onView(e)}
+            // onClick (not onPointerDown) — the rack scrolls vertically and
+            // onPointerDown fires before the browser disambiguates tap from
+            // scroll, so swiping over a card would open it mid-scroll.
+            // See feedback_onclick_for_scrollable_lists.md.
+            onClick={() => onView(e)}
           >
             <div className="iof-wall__card-num">{String(i + 1).padStart(2, '0')}</div>
             <div className="iof-wall__card-photo">
