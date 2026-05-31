@@ -67,7 +67,9 @@ export default function InkOfFate() {
   const [errorLabel, setErrorLabel] = useState('');
   const [hasFirstTouched, setHasFirstTouched] = useState(false);
   const [cameFromWall, setCameFromWall] = useState(false);
-  const [authorOfCurrent, setAuthorOfCurrent] = useState<string | undefined>();
+  const [authorOfCurrent, setAuthorOfCurrent] = useState<
+    { userId: string; userName?: string; userAvatarUrl?: string } | undefined
+  >();
 
   // Local mirror of the save — useGameSave.savedData does NOT update after
   // persist(), so without a mirror the wall MINE tab + ownTattoos count
@@ -190,7 +192,11 @@ export default function InkOfFate() {
   };
   const handleViewFromWall = (entry: WallEntry) => {
     setCurrent(entry.tattoo);
-    setAuthorOfCurrent(entry.userName);
+    setAuthorOfCurrent({
+      userId: entry.userId,
+      userName: entry.userName,
+      userAvatarUrl: entry.userAvatarUrl,
+    });
     setCameFromWall(true);
     setPhase('result');
   };
@@ -259,7 +265,7 @@ export default function InkOfFate() {
           onShare={isInAigram ? undefined : handleShare}
           shareLabel={shareLabel || undefined}
           shareDisabled={!!shareLabel}
-          authorName={authorOfCurrent}
+          author={authorOfCurrent}
         />
       )}
       {phase === 'wall' && (

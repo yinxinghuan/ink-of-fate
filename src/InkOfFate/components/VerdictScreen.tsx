@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
+import { isInAigram, openAigramProfile } from '@shared/runtime';
 import { t } from '../i18n';
 import { placementLabel, styleLabel } from '../utils/prompts';
 import type { Tattoo } from '../types';
+
+interface Author {
+  userId: string;
+  userName?: string;
+  userAvatarUrl?: string;
+}
 
 interface Props {
   tattoo: Tattoo;
@@ -11,7 +18,7 @@ interface Props {
   onNew: () => void;
   onWall: () => void;
   onShare?: () => void;
-  authorName?: string;
+  author?: Author;
 }
 
 const TONE_LABEL_EN: Record<string, string> = {
@@ -29,7 +36,7 @@ export default function VerdictScreen({
   onNew,
   onWall,
   onShare,
-  authorName,
+  author,
 }: Props) {
   const { reading } = tattoo;
   const [typed, setTyped] = useState('');
@@ -104,8 +111,33 @@ export default function VerdictScreen({
       <div className="iof-verdict__title-block">
         <div className="iof-verdict__ticket-line">
           {tattoo.ticketNumber} · {tattoo.signedDate}
-          {authorName && viewMode === 'gallery' ? ` · ${authorName}` : ''}
         </div>
+        {author && viewMode === 'gallery' && (
+          <button
+            type="button"
+            className="iof-verdict__author-chip"
+            // Tap author chip → opens that user's Aigram profile.
+            // See cross-user-profile-tap skill.
+            onClick={(ev) => {
+              ev.stopPropagation();
+              if (isInAigram) openAigramProfile(author.userId);
+            }}
+            disabled={!isInAigram}
+            aria-label={`Open ${author.userName || 'user'}'s profile`}
+          >
+            <span className="iof-verdict__author-label">— marked:</span>
+            <span className="iof-verdict__author-avatar" aria-hidden>
+              {author.userAvatarUrl ? (
+                <img src={author.userAvatarUrl} alt="" draggable={false} />
+              ) : (
+                <span className="iof-verdict__author-letter">
+                  {(author.userName || '?')[0]?.toUpperCase()}
+                </span>
+              )}
+            </span>
+            <span className="iof-verdict__author-name">{author.userName || '·'}</span>
+          </button>
+        )}
         <h1 className="iof-verdict__headline">{reading.headline}</h1>
         <div className="iof-verdict__meta-chips">
           <span className="iof-meta-chip">{styleLabel(reading.style)}</span>

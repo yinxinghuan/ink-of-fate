@@ -1094,6 +1094,68 @@
     padding: 0 18px;
     margin-bottom: 22px;
   }
+  &__author-chip {
+    margin-top: 8px;
+    background: fade(@parlor-deep, 70%);
+    border: 1px solid fade(@neon-pink, 35%);
+    border-radius: 999px;
+    padding: 6px 14px 6px 6px;
+    color: @parchment;
+    font-family: @font-body;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+    transition: background 140ms ease, border-color 140ms ease;
+    &:active { transform: scale(0.97); }
+    &:hover { border-color: @neon-pink; background: fade(@neon-pink, 8%); }
+    &:disabled { cursor: default; opacity: 0.85; }
+  }
+  &__author-label {
+    font-family: @font-body;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: @blood;
+    text-shadow: 0 0 4px fade(@blood, 50%);
+  }
+  &__author-avatar {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: @parlor-brick;
+    border: 1px solid fade(@neon-pink, 50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+  &__author-letter {
+    font-family: @font-body;
+    font-size: 10px;
+    font-weight: 700;
+    color: @neon-pink;
+    text-shadow: 0 0 4px fade(@neon-pink, 60%);
+  }
+  &__author-name {
+    font-family: @font-head;
+    font-size: 14px;
+    color: @parchment;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+  }
   &__ticket-line {
     font-family: @font-body;
     font-size: 10px;
