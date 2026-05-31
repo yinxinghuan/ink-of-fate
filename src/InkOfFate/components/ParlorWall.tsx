@@ -126,10 +126,21 @@ export default function ParlorWall({
                 <span className="iof-meta-chip">{placementLabel(e.tattoo.reading.placement)}</span>
               </div>
               <div className="iof-wall__card-foot">
-                {e.userName ? (
-                  <span className="iof-wall__card-name">{e.userName}</span>
-                ) : (
+                {e.userId === 'me' ? (
                   <span className="iof-wall__card-name iof-wall__card-name--me">YOU</span>
+                ) : (
+                  <>
+                    <span className="iof-wall__card-avatar" aria-hidden>
+                      {e.userAvatarUrl ? (
+                        <img src={e.userAvatarUrl} alt="" draggable={false} />
+                      ) : (
+                        <span className="iof-wall__card-avatar-letter">
+                          {(e.userName || '?')[0]?.toUpperCase()}
+                        </span>
+                      )}
+                    </span>
+                    <span className="iof-wall__card-name">{e.userName || '·'}</span>
+                  </>
                 )}
                 <span className="iof-wall__card-ticket">{e.tattoo.ticketNumber}</span>
               </div>

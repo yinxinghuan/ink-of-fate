@@ -1597,6 +1597,31 @@
       text-shadow: 0 0 4px fade(@neon-pink, 60%);
     }
   }
+  &__card-avatar {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: @parlor-brick;
+    border: 1px solid fade(@neon-cyan, 30%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+  &__card-avatar-letter {
+    font-family: @font-body;
+    font-size: 9px;
+    font-weight: 700;
+    color: @neon-cyan;
+    text-shadow: 0 0 3px fade(@neon-cyan, 60%);
+  }
   &__card-ticket {
     font-family: @font-body;
     font-size: 9px;
