@@ -1597,6 +1597,31 @@
       text-shadow: 0 0 4px fade(@neon-pink, 60%);
     }
   }
+  // Author chip — tappable group of avatar + name that opens the user's
+  // Aigram profile. Resets the inner button defaults so it inherits the
+  // card-foot's flex layout.
+  &__author-chip {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+    &:active { transform: scale(0.97); }
+    &:disabled {
+      cursor: default;
+      opacity: 1;
+    }
+  }
   &__card-avatar {
     flex: 0 0 18px;
     width: 18px;

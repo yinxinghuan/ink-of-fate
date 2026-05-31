@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isInAigram, openAigramProfile } from '@shared/runtime';
 import { t } from '../i18n';
 import { placementLabel, styleLabel } from '../utils/prompts';
 import type { Tattoo, WallEntry } from '../types';
@@ -129,7 +130,20 @@ export default function ParlorWall({
                 {e.userId === 'me' ? (
                   <span className="iof-wall__card-name iof-wall__card-name--me">YOU</span>
                 ) : (
-                  <>
+                  <button
+                    type="button"
+                    className="iof-wall__author-chip"
+                    // Tap the author chip → opens that user's Aigram
+                    // profile. stopPropagation so the parent card's
+                    // onClick (open verdict detail) doesn't also fire.
+                    // See cross-user-profile-tap skill.
+                    onClick={(ev) => {
+                      ev.stopPropagation();
+                      if (isInAigram) openAigramProfile(e.userId);
+                    }}
+                    disabled={!isInAigram}
+                    aria-label={`Open ${e.userName || 'user'}'s profile`}
+                  >
                     <span className="iof-wall__card-avatar" aria-hidden>
                       {e.userAvatarUrl ? (
                         <img src={e.userAvatarUrl} alt="" draggable={false} />
@@ -140,7 +154,7 @@ export default function ParlorWall({
                       )}
                     </span>
                     <span className="iof-wall__card-name">{e.userName || '·'}</span>
-                  </>
+                  </button>
                 )}
                 <span className="iof-wall__card-ticket">{e.tattoo.ticketNumber}</span>
               </div>
