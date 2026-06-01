@@ -589,11 +589,12 @@
     z-index: 4;
   }
 
-  // Floating intro line — drifts in the upper third over the scene.
+  // Floating intro line — sits over the lamp/forehead dark band so it doesn't
+  // cover the bandana on the new portrait scene.
   &__intro {
     position: relative;
     z-index: 2;
-    margin: 16vh 24px 0;
+    margin: 8vh 24px 0;
     font-family: @font-italic;
     font-style: italic;
     font-size: 19px;
@@ -606,23 +607,23 @@
     margin-right: auto;
   }
 
-  // Bottom sheet — sticky card carrying the controls. Lets the upper half
-  // breathe so the painted artist stays visible. Same gradient + border
-  // language as verdict cards so the game feels series-consistent.
+  // Bottom sheet — sticky card carrying the controls. Slightly more
+  // transparent than before so the artist behind it isn't fully blacked
+  // out, and tighter padding so it eats less of the scene.
   &__sheet {
     position: relative;
     z-index: 2;
     margin: auto 16px 16px;
-    padding: 16px 18px 22px;
+    padding: 12px 18px 18px;
     background: linear-gradient(180deg,
-      fade(@parlor-deep, 78%) 0%,
-      fade(@parlor-black, 96%) 100%);
+      fade(@parlor-deep, 58%) 0%,
+      fade(@parlor-black, 92%) 100%);
     border: 1px solid fade(@parchment, 14%);
     border-radius: 6px;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
     max-width: 520px;
     margin-left: auto;
     margin-right: auto;
@@ -634,8 +635,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 14px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
     border-bottom: 1px dashed fade(@parchment, 14%);
   }
   &__step-num {

@@ -78,36 +78,29 @@ export default function StudioScreen({ profile, onBack, onSubmit, errorLabel }: 
             <span className="iof-studio__step-label">{t('studio_step_face')}</span>
           </div>
 
-          <div className="iof-studio__face-stage">
-            <div className="iof-studio__preview iof-studio__preview--lg">
-              {previewSrc ? (
-                <img src={previewSrc} alt="" className="iof-studio__preview-img" />
-              ) : (
-                <div className="iof-studio__preview-placeholder">?</div>
-              )}
-            </div>
-
-            <div className="iof-studio__face-stack">
-              {profile?.avatarUrl && (
-                <button
-                  type="button"
-                  className="iof-cta iof-cta--big iof-studio__face-cta"
-                  onPointerDown={handleUseAvatar}
-                >
-                  {t('studio_use_my_avatar')}
-                </button>
-              )}
-              <label className="iof-cta iof-cta--secondary iof-studio__face-cta">
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFile}
-                  hidden
-                />
-                {t('studio_upload')}
-              </label>
-            </div>
+          {/* No placeholder preview circle in step 1 — without a picked
+              image, the "?" disc just eats space and blocks the artist. The
+              preview re-appears in step 2 once the player has chosen. */}
+          <div className="iof-studio__face-stack">
+            {profile?.avatarUrl && (
+              <button
+                type="button"
+                className="iof-cta iof-cta--big iof-studio__face-cta"
+                onPointerDown={handleUseAvatar}
+              >
+                {t('studio_use_my_avatar')}
+              </button>
+            )}
+            <label className="iof-cta iof-cta--secondary iof-studio__face-cta">
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFile}
+                hidden
+              />
+              {t('studio_upload')}
+            </label>
           </div>
         </div>
       )}
