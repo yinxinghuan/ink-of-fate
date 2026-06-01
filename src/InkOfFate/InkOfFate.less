@@ -55,6 +55,12 @@
     object-fit: cover;
     display: block;
   }
+  // Splash variant only — almost imperceptible "alive" pulse on the bg.
+  // 10s sin scale between 1.0 and 1.025; gives the still poster a heartbeat.
+  &--breathe img {
+    animation: iof-scene-breathe 10s ease-in-out infinite;
+    transform-origin: 50% 45%;
+  }
   &__vignette {
     position: absolute;
     inset: 0;
@@ -197,6 +203,22 @@
   20%, 21.9%, 63%, 63.9%, 65%, 69.9% { opacity: 0.4; }
 }
 
+// Splash scene breath — barely perceptible, gives the still hero a pulse.
+@keyframes iof-scene-breathe {
+  0%, 100% { transform: scale(1.0); }
+  50%      { transform: scale(1.025); }
+}
+
+// Smoke wisp — rises from cigarette area, drifts laterally, fades, repeats.
+// Three instances run at staggered durations/offsets so the loop never reads.
+@keyframes iof-smoke-rise {
+  0%   { transform: translate(0, 0)        scale(0.6); opacity: 0; }
+  18%  {                                                opacity: 0.85; }
+  55%  { transform: translate(6px, -34%)   scale(1.0); opacity: 0.55; }
+  85%  { transform: translate(-4px, -62%)  scale(1.5); opacity: 0.18; }
+  100% { transform: translate(2px, -78%)   scale(1.9); opacity: 0; }
+}
+
 // ─── Booth (parlor exterior) ───────────────────────────────────────────
 .iof-booth {
   position: absolute;
@@ -223,15 +245,18 @@
   &__hero {
     position: absolute;
     z-index: 4;
-    top: 6vh;
+    top: 3.5vh;
     left: 18px;
     right: 18px;
     text-align: center;
     pointer-events: none;
   }
+  // POV hero image puts the artist's face in the upper third, so the title
+  // must compete for less space than before — drop the size by ~30% and the
+  // rule width to match. The dark-top gradient keeps the title readable.
   &__hero-title {
     font-family: @font-head;
-    font-size: clamp(46px, 13vw, 76px);
+    font-size: clamp(32px, 9vw, 52px);
     line-height: 0.9;
     letter-spacing: 0.02em;
     color: @parchment;
@@ -244,10 +269,10 @@
     animation: iof-neon-flicker 6s linear infinite;
   }
   &__hero-rule {
-    width: 56%;
-    max-width: 220px;
-    height: 8px;
-    margin: 12px auto 14px;
+    width: 40%;
+    max-width: 160px;
+    height: 6px;
+    margin: 8px auto 10px;
     background: linear-gradient(to right,
       transparent 0%,
       fade(@neon-cyan, 65%) 18%,
@@ -255,28 +280,39 @@
       fade(@neon-cyan, 65%) 82%,
       transparent 100%);
     filter: blur(0.6px);
-    box-shadow: 0 0 14px fade(@neon-cyan, 70%);
+    box-shadow: 0 0 12px fade(@neon-cyan, 70%);
     border-radius: 2px;
   }
   &__hero-pitch-top {
-    font-family: @font-body;
-    font-size: clamp(16px, 4.6vw, 22px);
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: @parchment;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.85), 0 0 18px fade(@amber, 22%);
-    margin-bottom: 6px;
+    font-family: @font-head;
+    font-style: italic;
+    font-size: clamp(15px, 4.4vw, 20px);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: fade(@parchment, 95%);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.9), 0 0 22px fade(@amber, 20%);
   }
-  &__hero-pitch-bot {
-    font-family: @font-body;
-    font-size: clamp(13px, 3.8vw, 16px);
-    letter-spacing: 0.06em;
-    color: fade(@parchment, 85%);
-    line-height: 1.4;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.85);
-    max-width: 360px;
-    margin: 0 auto;
+
+  // Smoke SVG layer — sits between bg and hero text. Three wisps rise with
+  // staggered offsets so the curl never repeats visibly. Pointer-events
+  // disabled so it doesn't eat taps on the bg.
+  &__smoke {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0.85;
   }
+  &__smoke-wisp {
+    transform-origin: 50% 80%;
+    will-change: transform, opacity;
+  }
+  &__smoke-wisp--a { animation: iof-smoke-rise 7s ease-in-out infinite; }
+  &__smoke-wisp--b { animation: iof-smoke-rise 9.5s ease-in-out -2.5s infinite; }
+  &__smoke-wisp--c { animation: iof-smoke-rise 12s ease-in-out -6s infinite; }
 
   // Bottom action band — dark gradient anchored to the floor, two big
   // chunky buttons that read against the painted parlor scene. This

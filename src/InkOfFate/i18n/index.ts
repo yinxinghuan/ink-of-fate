@@ -6,9 +6,8 @@ const dict: Record<Locale, Record<string, string>> = {
   en: {
     sign_title: 'INK OF FATE',
     sign_sub: 'a tattoo your face was asking for',
-    booth_pitch_top: 'Show your face.',
-    booth_pitch_bot: 'The old biker decides the tattoo you were always going to get.',
-    booth_step_in: 'Step in',
+    booth_pitch_top: "he's been waiting.",
+    booth_step_in: 'Sit down',
     booth_open_since: 'Open since 1973 · cash only',
     booth_clients_today: '{n} clients tonight',
 
@@ -78,9 +77,8 @@ const dict: Record<Locale, Record<string, string>> = {
   zh: {
     sign_title: 'INK OF FATE',
     sign_sub: '一刀你脸早就求着要的',
-    booth_pitch_top: '把脸交给老师傅。',
-    booth_pitch_bot: '他决定你这辈子注定要纹的图。',
-    booth_step_in: '推门进去',
+    booth_pitch_top: '他在等你。',
+    booth_step_in: '坐下',
     booth_open_since: '1973 年开张 · 只收现金',
     booth_clients_today: '今夜 {n} 位客人',
 
