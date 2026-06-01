@@ -107,47 +107,51 @@ export default function BoothScreen({
 function TattooMark() {
   return (
     <div className="iof-mark" aria-label="Ink of Fate">
-      {/* dagger ornaments flank the wordmark */}
-      <Dagger className="iof-mark__dagger iof-mark__dagger--left" />
-      <div className="iof-mark__words">
-        <div className="iof-mark__title" aria-hidden>
-          <span className="iof-mark__title-back" aria-hidden>INK&nbsp;OF&nbsp;FATE</span>
-          <span className="iof-mark__title-front">INK&nbsp;OF&nbsp;FATE</span>
+      {/* Stacked wordmark — INK over FATE with a small italic "of" between.
+          Two sheriff stars flank vertically so the unit reads tall + dense.
+          No frame — the wordmark stands free against the scene. */}
+      <div className="iof-mark__rows">
+        <Star className="iof-mark__star iof-mark__star--left" />
+        <div className="iof-mark__words">
+          <div className="iof-mark__title iof-mark__title--ink" aria-hidden>
+            <span className="iof-mark__title-back">INK</span>
+            <span className="iof-mark__title-front">INK</span>
+          </div>
+          <div className="iof-mark__of" aria-hidden>of</div>
+          <div className="iof-mark__title iof-mark__title--fate" aria-hidden>
+            <span className="iof-mark__title-back">FATE</span>
+            <span className="iof-mark__title-front">FATE</span>
+          </div>
         </div>
-        <div className="iof-mark__banner" aria-hidden>
-          <span className="iof-mark__banner-rule" />
-          <span className="iof-mark__banner-text">parlor &middot; est. 1973</span>
-          <span className="iof-mark__banner-rule" />
-        </div>
+        <Star className="iof-mark__star iof-mark__star--right" />
       </div>
-      <Dagger className="iof-mark__dagger iof-mark__dagger--right" />
+      <div className="iof-mark__banner" aria-hidden>
+        <span className="iof-mark__banner-rule" />
+        <span className="iof-mark__banner-text">est. 1973 &middot; no cuts</span>
+        <span className="iof-mark__banner-rule" />
+      </div>
     </div>
   );
 }
 
-function Dagger({ className }: { className?: string }) {
+function Star({ className }: { className?: string }) {
   return (
     <svg
       className={className}
-      viewBox="0 0 16 64"
+      viewBox="0 0 24 24"
       aria-hidden
       preserveAspectRatio="xMidYMid meet"
     >
-      {/* pommel + grip + crossguard + blade — sailor-jerry style flanking */}
-      <g fill="currentColor" stroke="currentColor" strokeWidth="0.4">
-        {/* pommel */}
-        <circle cx="8" cy="3" r="1.6" />
-        {/* grip */}
-        <rect x="6.8" y="4.5" width="2.4" height="6" rx="0.8" />
-        {/* grip wrap dashes */}
-        <path d="M 6.8 5.7 L 9.2 5.7 M 6.8 7.1 L 9.2 7.1 M 6.8 8.5 L 9.2 8.5" stroke="rgba(0,0,0,0.45)" strokeWidth="0.4" fill="none" />
-        {/* crossguard */}
-        <rect x="3" y="10.4" width="10" height="1.6" rx="0.4" />
-        {/* blade */}
-        <path d="M 8 12 L 10.2 18 L 10.2 50 L 8 60 L 5.8 50 L 5.8 18 Z" />
-        {/* blade center fuller */}
-        <path d="M 8 14 L 8 56" stroke="rgba(0,0,0,0.35)" strokeWidth="0.5" />
-      </g>
+      {/* five-point sheriff star */}
+      <path
+        d="M 12 1 L 14.6 8.6 L 22.8 8.6 L 16.1 13.6 L 18.7 21.2 L 12 16.4 L 5.3 21.2 L 7.9 13.6 L 1.2 8.6 L 9.4 8.6 Z"
+        fill="currentColor"
+        stroke="rgba(0,0,0,0.85)"
+        strokeWidth="0.6"
+        strokeLinejoin="round"
+      />
+      {/* center pip */}
+      <circle cx="12" cy="12" r="1.3" fill="rgba(0,0,0,0.65)" />
     </svg>
   );
 }

@@ -306,9 +306,9 @@
   &__smoke-wisp--b { animation: iof-smoke-rise 9.5s ease-in-out -2.5s infinite; }
   &__smoke-wisp--c { animation: iof-smoke-rise 12s ease-in-out -6s infinite; }
 
-  // ─── Dock (bottom ~44%) — pitch + CTAs ──────────────────────────────
-  // Wordmark hovers above and partly overlaps the top edge of the dock.
-  // padding-top is generous so pitch starts below the wordmark.
+  // ─── Dock — pitch + CTAs ────────────────────────────────────────────
+  // Wordmark is large and crosses the seam, so dock needs generous top
+  // clearance so the pitch line never collides with the wordmark banner.
   &__dock {
     position: relative;
     flex: 1 1 auto;
@@ -316,7 +316,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 84px 20px 22px;  // top padding clears the overlapping wordmark
+    padding: 128px 20px 22px;  // top padding clears the BIG overlapping wordmark
     background:
       radial-gradient(ellipse at 50% 0%, fade(#1a0710, 55%) 0%, transparent 65%),
       linear-gradient(180deg, fade(@parlor-black, 92%) 0%, @parlor-black 50%, @parlor-black 100%);
@@ -342,184 +342,219 @@
     flex-direction: column;
     gap: 8px;
   }
+  // CTAs — wanted-poster style: parchment fill / black heavy stroke / amber
+  // border. Drops the pink+cyan neon palette so the buttons echo the wordmark.
   &__cta {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 3px;
     width: 100%;
-    padding: 12px 18px 11px;
-    border: 1.5px solid transparent;
-    border-radius: 3px;
+    padding: 13px 18px 11px;
+    border: 2px solid transparent;
+    border-radius: 2px;
     cursor: pointer;
-    font-family: @font-body;
+    font-family: 'Rye', 'Special Elite', serif;
     text-transform: uppercase;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: transform 80ms ease;
+    transition: transform 80ms ease, box-shadow 200ms ease;
     &:active { transform: scale(0.97); }
   }
   &__cta-label {
-    font-size: 18px;
-    letter-spacing: 0.36em;
-    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.32em;
+    font-weight: 400;
     line-height: 1;
   }
   &__cta-sub {
+    font-family: 'Special Elite', serif;
     font-size: 9.5px;
-    letter-spacing: 0.32em;
-    opacity: 0.6;
+    letter-spacing: 0.36em;
+    opacity: 0.7;
     line-height: 1.2;
+    margin-top: 2px;
   }
 
+  // Primary — aged parchment "REWARD"-style stamp with deep brown text
   &__cta--primary {
-    background: @neon-pink;
-    color: #2a0610;
-    border-color: @neon-pink;
+    background: linear-gradient(180deg, #f7e8c0 0%, #ecd292 55%, #d4b25c 100%);
+    color: #2a1408;
+    border-color: rgba(60,30,10,0.95);
     box-shadow:
-      0 0 0 2px fade(@parlor-black, 60%),
-      0 0 22px fade(@neon-pink, 55%),
+      0 0 0 1px rgba(240,200,120,0.45),
+      0 0 22px rgba(240,180,90,0.4),
+      inset 0 0 0 2px rgba(60,30,10,0.65),
       0 6px 18px rgba(0,0,0,0.6);
-    text-shadow: 0 1px 0 fade(@parchment, 30%);
+    text-shadow: 0 1px 0 rgba(247,232,192,0.4);
     animation: iof-cta-pulse 2.4s ease-in-out infinite;
   }
+  // Secondary — bare amber outline against the dark dock background
   &__cta--secondary {
-    background: transparent;
-    color: @neon-cyan;
-    border-color: fade(@neon-cyan, 70%);
+    background: rgba(10,4,5,0.65);
+    color: #e8c878;
+    border-color: rgba(232,200,120,0.7);
     box-shadow:
-      0 0 14px fade(@neon-cyan, 28%),
+      0 0 0 1px rgba(60,30,10,0.85),
+      0 0 14px rgba(240,180,90,0.18),
       0 4px 14px rgba(0,0,0,0.45);
-    text-shadow: 0 0 6px fade(@neon-cyan, 65%);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
   }
   &__cta--secondary &__cta-sub {
-    color: fade(@neon-cyan, 65%);
-    text-shadow: 0 0 5px fade(@neon-cyan, 45%);
+    color: rgba(232,200,120,0.7);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
   }
 }
 
 @keyframes iof-cta-pulse {
   0%, 100% {
     box-shadow:
-      0 0 0 2px fade(@parlor-black, 60%),
-      0 0 22px fade(@neon-pink, 55%),
+      0 0 0 1px rgba(240,200,120,0.45),
+      0 0 22px rgba(240,180,90,0.4),
+      inset 0 0 0 2px rgba(60,30,10,0.65),
       0 6px 18px rgba(0,0,0,0.6);
   }
   50% {
     box-shadow:
-      0 0 0 2px fade(@parlor-black, 60%),
-      0 0 36px fade(@neon-pink, 85%),
+      0 0 0 1px rgba(240,200,120,0.65),
+      0 0 38px rgba(240,180,90,0.7),
+      inset 0 0 0 2px rgba(60,30,10,0.75),
       0 6px 22px rgba(0,0,0,0.65);
   }
 }
 
-// ─── Illustrated wordmark ─────────────────────────────────────────────
-// Sits absolutely centered horizontally, vertically straddling the seam
-// between image (top) and dock (bottom). The Pirata One blackletter
-// foundation + dagger ornaments + sub-banner make it a single composed
-// graphic element rather than "title text".
+// ─── Illustrated wordmark · WESTERN WANTED-POSTER (stacked, no frame) ───
+// INK / of / FATE stacked + sheriff stars flanking. No surrounding frame —
+// the wordmark stands free over the scene. Much larger than the single-line
+// version so it becomes the unambiguous visual focal point.
 .iof-mark {
   position: absolute;
   left: 50%;
-  // Anchored so its center sits ~10px above the seam (image / dock boundary
-  // is at 56% from top). The wordmark crosses into the image by ~30% of its
-  // height and pushes ~70% into the dock, creating the "press into" effect.
-  top: calc(56% - 4px);
+  top: calc(56% + 8px);
   transform: translate(-50%, -50%);
   z-index: 10;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  gap: clamp(8px, 2.8vw, 14px);
-  width: min(92vw, 460px);
   pointer-events: none;
+  width: min(92vw, 440px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.7));
+}
 
-  &__dagger {
-    color: fade(@parchment, 92%);
-    width: clamp(14px, 3.8vw, 18px);
-    height: auto;
-    align-self: stretch;
-    filter:
-      drop-shadow(0 0 4px fade(@neon-pink, 55%))
-      drop-shadow(0 3px 5px rgba(0,0,0,0.85));
-  }
-  &__dagger--left  { transform: rotate(-6deg); }
-  &__dagger--right { transform: rotate( 6deg) scaleX(-1); }
+// Body row — left star + words + right star
+.iof-mark__rows {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+}
 
-  &__words {
-    flex: 0 1 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
+.iof-mark__star {
+  color: #f0d8a0;
+  width: clamp(46px, 11.5vw, 64px);
+  height: clamp(46px, 11.5vw, 64px);
+  flex: 0 0 auto;
+  filter:
+    drop-shadow(0 3px 5px rgba(0,0,0,0.95))
+    drop-shadow(0 0 10px rgba(255,180,80,0.45));
+}
+.iof-mark__star--left  { transform: rotate(-8deg); }
+.iof-mark__star--right { transform: rotate( 8deg); }
 
-  // Title — Pirata One blackletter, BIG, with layered front/back fills for a
-  // hand-printed look (back layer = drop-shadow stencil; front = neon-glow
-  // parchment fill). Both share the same animation so they read as one mark.
-  &__title {
-    position: relative;
-    font-family: 'Pirata One', 'Knewave', system-ui, serif;
-    font-size: clamp(48px, 14.5vw, 78px);
-    line-height: 0.88;
-    letter-spacing: 0.012em;
-    text-align: center;
-    white-space: nowrap;
-    animation: iof-neon-flicker 6s linear infinite;
-  }
-  &__title-back, &__title-front {
-    display: block;
-  }
-  &__title-back {
-    color: rgba(0,0,0,0.85);
-    -webkit-text-stroke: 5px rgba(0,0,0,0.85);
-    text-shadow:
-      0 4px 0 rgba(0,0,0,0.55),
-      0 0 30px rgba(0,0,0,0.85);
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-  }
-  &__title-front {
-    color: @parchment;
-    -webkit-text-stroke: 0.5px fade(@neon-pink, 55%);
-    text-shadow:
-      0 0 4px fade(@neon-pink, 100%),
-      0 0 14px fade(@neon-pink, 90%),
-      0 0 32px fade(@neon-pink, 60%),
-      0 0 64px fade(@neon-pink, 35%),
-      0 2px 0 rgba(0,0,0,0.35);
-    position: relative;
-    z-index: 2;
-  }
+.iof-mark__words {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
 
-  // Sub-banner — small caps "PARLOR · EST. 1973" between hairline rules
-  &__banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 2px;
-  }
-  &__banner-rule {
-    width: 28px;
-    height: 1px;
-    background: linear-gradient(to right,
-      transparent 0%,
-      fade(@neon-cyan, 80%) 50%,
-      transparent 100%);
-    box-shadow: 0 0 8px fade(@neon-cyan, 50%);
-  }
-  &__banner-text {
-    font-family: @font-body;
-    font-size: 10px;
-    letter-spacing: 0.36em;
-    text-transform: uppercase;
-    color: fade(@neon-cyan, 92%);
-    text-shadow:
-      0 0 6px fade(@neon-cyan, 60%),
-      0 1px 2px rgba(0,0,0,0.9);
-  }
+// Title — Rye slab-serif Western. line-height: 1 + no negative margins
+// prevents the two lines from biting into each other.
+.iof-mark__title {
+  position: relative;
+  font-family: 'Rye', 'Special Elite', serif;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1;
+}
+.iof-mark__title--ink  { font-size: clamp(62px, 18vw, 96px); }
+.iof-mark__title--fate { font-size: clamp(62px, 18vw, 96px); }
+
+.iof-mark__title-back, .iof-mark__title-front {
+  display: block;
+}
+.iof-mark__title-back {
+  color: rgba(0,0,0,0.95);
+  -webkit-text-stroke: 5.5px rgba(0,0,0,0.95);
+  text-shadow:
+    0 4px 0 rgba(0,0,0,0.6),
+    0 0 22px rgba(0,0,0,0.95);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.iof-mark__title-front {
+  background: linear-gradient(180deg, #f7e8c0 0%, #ecd292 55%, #d4b25c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-text-stroke: 0.4px rgba(60,30,10,0.3);
+  text-shadow:
+    0 1px 0 rgba(120,70,20,0.4),
+    0 3px 6px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 2;
+}
+
+// Middle "of" — small lowercase Rye, same family as INK/FATE so it reads as
+// part of the wordmark, not a foreign element. Slightly indented and tucked
+// up tight between the two big lines.
+.iof-mark__of {
+  font-family: 'Rye', 'Special Elite', serif;
+  font-size: clamp(20px, 5.5vw, 28px);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: #f0d8a0;
+  text-align: center;
+  margin: 2px 0;
+  text-shadow:
+    0 1px 0 rgba(60,30,10,0.65),
+    0 2px 5px rgba(0,0,0,0.85);
+}
+
+// Sub-banner — sits at the bottom of the cartouche, inside the frame
+.iof-mark__banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  position: relative;
+  z-index: 3;
+}
+.iof-mark__banner-rule {
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(to right,
+    transparent 0%,
+    rgba(240,200,120,0.85) 50%,
+    transparent 100%);
+  box-shadow: 0 0 6px rgba(240,200,120,0.4);
+}
+.iof-mark__banner-text {
+  font-family: 'Rye', 'Special Elite', serif;
+  font-size: 10px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: #e8c878;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,0.95),
+    0 0 5px rgba(240,180,90,0.35);
 }
 
 @keyframes iof-firsttouch-pulse {
