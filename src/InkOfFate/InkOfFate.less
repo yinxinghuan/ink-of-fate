@@ -219,83 +219,75 @@
   100% { transform: translate(2px, -78%)   scale(1.9); opacity: 0; }
 }
 
-// ─── Booth (parlor exterior) ───────────────────────────────────────────
+// ─── Booth splash — two-zone layout w/ overlapping wordmark ─────────────
+// Top zone: image owns the canvas + entire image area is tappable to enter
+// (matches "tap to enter" hint). Bottom zone (dock) holds pitch + CTAs.
+// The illustrated wordmark (.iof-mark) is positioned absolutely to overlap
+// the boundary between the two — it's the visual focal point.
 .iof-booth {
   position: absolute;
   inset: 0;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 22px 18px 28px;
+  background: @parlor-black;
+  color: @parchment;
 
-  // Hero — TikTok-style swipe-list landing has only ~1s before the player
-  // swipes away. The painted scene alone doesn't sell the gameplay; the
-  // hero band carries the brand + the value prop in plain language so a
-  // first-time visitor instantly knows "this is where I get an AI tattoo
-  // from a biker artist."
-  &__top-darken {
-    position: absolute;
-    inset: 0 0 50% 0;
-    background:
-      linear-gradient(180deg, fade(@parlor-black, 75%) 0%, fade(@parlor-black, 35%) 60%, transparent 100%);
-    pointer-events: none;
-  }
-  &__hero {
-    position: absolute;
-    z-index: 4;
-    top: 3.5vh;
-    left: 18px;
-    right: 18px;
-    text-align: center;
-    pointer-events: none;
-  }
-  // POV hero image puts the artist's face in the upper third, so the title
-  // must compete for less space than before — drop the size by ~30% and the
-  // rule width to match. The dark-top gradient keeps the title readable.
-  &__hero-title {
-    font-family: @font-head;
-    font-size: clamp(32px, 9vw, 52px);
-    line-height: 0.9;
-    letter-spacing: 0.02em;
-    color: @parchment;
-    text-shadow:
-      0 0 6px fade(@neon-pink, 100%),
-      0 0 18px fade(@neon-pink, 90%),
-      0 0 44px fade(@neon-pink, 60%),
-      0 0 90px fade(@neon-pink, 35%),
-      0 4px 12px rgba(0,0,0,0.85);
-    animation: iof-neon-flicker 6s linear infinite;
-  }
-  &__hero-rule {
-    width: 40%;
-    max-width: 160px;
-    height: 6px;
-    margin: 8px auto 10px;
-    background: linear-gradient(to right,
-      transparent 0%,
-      fade(@neon-cyan, 65%) 18%,
-      fade(@neon-cyan, 95%) 50%,
-      fade(@neon-cyan, 65%) 82%,
-      transparent 100%);
-    filter: blur(0.6px);
-    box-shadow: 0 0 12px fade(@neon-cyan, 70%);
-    border-radius: 2px;
-  }
-  &__hero-pitch-top {
-    font-family: @font-head;
-    font-style: italic;
-    font-size: clamp(15px, 4.4vw, 20px);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: fade(@parchment, 95%);
-    text-shadow: 0 2px 10px rgba(0,0,0,0.9), 0 0 22px fade(@amber, 20%);
+  &__imagewrap {
+    position: relative;
+    flex: 0 0 56%;
+    min-height: 0;
+    overflow: hidden;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+    .iof-scene-bg {
+      position: absolute;
+      inset: 0;
+    }
   }
 
-  // Smoke SVG layer — sits between bg and hero text. Three wisps rise with
-  // staggered offsets so the curl never repeats visibly. Pointer-events
-  // disabled so it doesn't eat taps on the bg.
+  // Pulsing tap-to-enter hint — floats near the bottom of the image zone
+  // since the entire image is now the tap target.
+  &__tap-hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 24px;
+    z-index: 7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: @font-body;
+    font-size: 11px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: fade(@parchment, 85%);
+    text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 2px 8px rgba(0,0,0,0.85);
+    pointer-events: none;
+    animation: iof-firsttouch-pulse 1.6s ease-in-out infinite;
+  }
+  &__tap-hint-arrow {
+    width: 14px;
+    height: 1px;
+    background: fade(@parchment, 75%);
+    box-shadow: 0 0 6px fade(@parchment, 50%);
+    position: relative;
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 5px;
+      height: 1px;
+      background: fade(@parchment, 75%);
+    }
+    &::before { left: 0;  transform: translateY(-50%) rotate(-35deg); transform-origin: left center; }
+    &::after  { right: 0; transform: translateY(-50%) rotate( 35deg); transform-origin: right center; }
+  }
+
+  // Smoke SVG layer — confined to the image zone (parent imagewrap clips it).
   &__smoke {
     position: absolute;
     inset: 0;
@@ -314,41 +306,51 @@
   &__smoke-wisp--b { animation: iof-smoke-rise 9.5s ease-in-out -2.5s infinite; }
   &__smoke-wisp--c { animation: iof-smoke-rise 12s ease-in-out -6s infinite; }
 
-  // Bottom action band — dark gradient anchored to the floor, two big
-  // chunky buttons that read against the painted parlor scene. This
-  // replaces the earlier transparent-outline pair that disappeared
-  // against the cobblestones.
-  &__ctas {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 5;
-    padding: 56px 16px 22px;
+  // ─── Dock (bottom ~44%) — pitch + CTAs ──────────────────────────────
+  // Wordmark hovers above and partly overlaps the top edge of the dock.
+  // padding-top is generous so pitch starts below the wordmark.
+  &__dock {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    padding: 84px 20px 22px;  // top padding clears the overlapping wordmark
     background:
-      linear-gradient(
-        180deg,
-        transparent 0%,
-        fade(@parlor-black, 35%) 22%,
-        fade(@parlor-black, 88%) 65%,
-        fade(@parlor-black, 96%) 100%
-      );
-    pointer-events: none;
-    > * { pointer-events: auto; }
+      radial-gradient(ellipse at 50% 0%, fade(#1a0710, 55%) 0%, transparent 65%),
+      linear-gradient(180deg, fade(@parlor-black, 92%) 0%, @parlor-black 50%, @parlor-black 100%);
   }
 
+  // ─── Pitch line ──────────────────────────────────────────────────────
+  &__pitch {
+    font-family: 'Cormorant Garamond', 'Special Elite', serif;
+    font-style: italic;
+    font-size: clamp(16px, 4.8vw, 21px);
+    letter-spacing: 0.02em;
+    color: fade(@parchment, 92%);
+    text-align: center;
+    margin: 0 0 18px;
+    line-height: 1.3;
+  }
+
+  // ─── CTAs ────────────────────────────────────────────────────────────
+  &__ctas {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
   &__cta {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     width: 100%;
-    padding: 14px 18px 12px;
-    border: 2px solid transparent;
-    border-radius: 4px;
+    padding: 12px 18px 11px;
+    border: 1.5px solid transparent;
+    border-radius: 3px;
     cursor: pointer;
     font-family: @font-body;
     text-transform: uppercase;
@@ -358,13 +360,13 @@
     &:active { transform: scale(0.97); }
   }
   &__cta-label {
-    font-size: 19px;
-    letter-spacing: 0.32em;
+    font-size: 18px;
+    letter-spacing: 0.36em;
     font-weight: 700;
     line-height: 1;
   }
   &__cta-sub {
-    font-size: 10px;
+    font-size: 9.5px;
     letter-spacing: 0.32em;
     opacity: 0.6;
     line-height: 1.2;
@@ -375,66 +377,154 @@
     color: #2a0610;
     border-color: @neon-pink;
     box-shadow:
-      0 0 0 3px fade(@parlor-black, 60%),
-      0 0 26px fade(@neon-pink, 65%),
-      0 8px 22px rgba(0,0,0,0.65);
+      0 0 0 2px fade(@parlor-black, 60%),
+      0 0 22px fade(@neon-pink, 55%),
+      0 6px 18px rgba(0,0,0,0.6);
     text-shadow: 0 1px 0 fade(@parchment, 30%);
     animation: iof-cta-pulse 2.4s ease-in-out infinite;
   }
-  &__cta--primary &__cta-sub {
-    color: #4a1418;
-    opacity: 0.7;
-  }
-
   &__cta--secondary {
-    background: fade(@parlor-black, 90%);
+    background: transparent;
     color: @neon-cyan;
-    border-color: @neon-cyan;
+    border-color: fade(@neon-cyan, 70%);
     box-shadow:
-      0 0 16px fade(@neon-cyan, 40%),
-      0 6px 18px rgba(0,0,0,0.6);
-    text-shadow: 0 0 8px fade(@neon-cyan, 80%);
+      0 0 14px fade(@neon-cyan, 28%),
+      0 4px 14px rgba(0,0,0,0.45);
+    text-shadow: 0 0 6px fade(@neon-cyan, 65%);
   }
   &__cta--secondary &__cta-sub {
-    color: fade(@neon-cyan, 70%);
-    text-shadow: 0 0 6px fade(@neon-cyan, 50%);
+    color: fade(@neon-cyan, 65%);
+    text-shadow: 0 0 5px fade(@neon-cyan, 45%);
   }
 }
 
 @keyframes iof-cta-pulse {
   0%, 100% {
     box-shadow:
-      0 0 0 3px fade(@parlor-black, 60%),
-      0 0 26px fade(@neon-pink, 65%),
-      0 8px 22px rgba(0,0,0,0.65);
+      0 0 0 2px fade(@parlor-black, 60%),
+      0 0 22px fade(@neon-pink, 55%),
+      0 6px 18px rgba(0,0,0,0.6);
   }
   50% {
     box-shadow:
-      0 0 0 3px fade(@parlor-black, 60%),
-      0 0 42px fade(@neon-pink, 90%),
-      0 8px 28px rgba(0,0,0,0.7);
+      0 0 0 2px fade(@parlor-black, 60%),
+      0 0 36px fade(@neon-pink, 85%),
+      0 6px 22px rgba(0,0,0,0.65);
   }
 }
 
-// First-touch hint — floats above the bottom CTA band.
-.iof-firsttouch {
+// ─── Illustrated wordmark ─────────────────────────────────────────────
+// Sits absolutely centered horizontally, vertically straddling the seam
+// between image (top) and dock (bottom). The Pirata One blackletter
+// foundation + dagger ornaments + sub-banner make it a single composed
+// graphic element rather than "title text".
+.iof-mark {
   position: absolute;
-  bottom: calc(22px + 56px * 2 + 22px + 32px);
   left: 50%;
-  transform: translateX(-50%);
-  font-size: 11px;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: fade(@parchment, 80%);
-  text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  // Anchored so its center sits ~10px above the seam (image / dock boundary
+  // is at 56% from top). The wordmark crosses into the image by ~30% of its
+  // height and pushes ~70% into the dock, creating the "press into" effect.
+  top: calc(56% - 4px);
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(8px, 2.8vw, 14px);
+  width: min(92vw, 460px);
   pointer-events: none;
-  z-index: 6;
-  white-space: nowrap;
-  animation: iof-firsttouch-pulse 1.6s ease-in-out infinite;
+
+  &__dagger {
+    color: fade(@parchment, 92%);
+    width: clamp(14px, 3.8vw, 18px);
+    height: auto;
+    align-self: stretch;
+    filter:
+      drop-shadow(0 0 4px fade(@neon-pink, 55%))
+      drop-shadow(0 3px 5px rgba(0,0,0,0.85));
+  }
+  &__dagger--left  { transform: rotate(-6deg); }
+  &__dagger--right { transform: rotate( 6deg) scaleX(-1); }
+
+  &__words {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  // Title — Pirata One blackletter, BIG, with layered front/back fills for a
+  // hand-printed look (back layer = drop-shadow stencil; front = neon-glow
+  // parchment fill). Both share the same animation so they read as one mark.
+  &__title {
+    position: relative;
+    font-family: 'Pirata One', 'Knewave', system-ui, serif;
+    font-size: clamp(48px, 14.5vw, 78px);
+    line-height: 0.88;
+    letter-spacing: 0.012em;
+    text-align: center;
+    white-space: nowrap;
+    animation: iof-neon-flicker 6s linear infinite;
+  }
+  &__title-back, &__title-front {
+    display: block;
+  }
+  &__title-back {
+    color: rgba(0,0,0,0.85);
+    -webkit-text-stroke: 5px rgba(0,0,0,0.85);
+    text-shadow:
+      0 4px 0 rgba(0,0,0,0.55),
+      0 0 30px rgba(0,0,0,0.85);
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  &__title-front {
+    color: @parchment;
+    -webkit-text-stroke: 0.5px fade(@neon-pink, 55%);
+    text-shadow:
+      0 0 4px fade(@neon-pink, 100%),
+      0 0 14px fade(@neon-pink, 90%),
+      0 0 32px fade(@neon-pink, 60%),
+      0 0 64px fade(@neon-pink, 35%),
+      0 2px 0 rgba(0,0,0,0.35);
+    position: relative;
+    z-index: 2;
+  }
+
+  // Sub-banner — small caps "PARLOR · EST. 1973" between hairline rules
+  &__banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  &__banner-rule {
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      fade(@neon-cyan, 80%) 50%,
+      transparent 100%);
+    box-shadow: 0 0 8px fade(@neon-cyan, 50%);
+  }
+  &__banner-text {
+    font-family: @font-body;
+    font-size: 10px;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: fade(@neon-cyan, 92%);
+    text-shadow:
+      0 0 6px fade(@neon-cyan, 60%),
+      0 1px 2px rgba(0,0,0,0.9);
+  }
 }
+
 @keyframes iof-firsttouch-pulse {
-  0%, 100% { opacity: 0.35; transform: translateX(-50%) translateY(0); }
-  50%      { opacity: 0.95; transform: translateX(-50%) translateY(-3px); }
+  0%, 100% { opacity: 0.4; transform: translateY(0); }
+  50%      { opacity: 1;   transform: translateY(-3px); }
 }
 
 // ─── Studio (interior) ─────────────────────────────────────────────────
