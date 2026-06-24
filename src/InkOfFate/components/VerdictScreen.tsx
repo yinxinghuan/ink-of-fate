@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { isInAigram, openAigramProfile } from '@shared/runtime';
-import { t } from '../i18n';
+import {
+  threadFor,
+  timeAgo,
+  cleanText,
+  MAX_LEN,
+  type GuestMessage,
+} from '@shared/social/guestbook';
+import { t, getLocale } from '../i18n';
 import { placementLabel, styleLabel } from '../utils/prompts';
 import type { Tattoo } from '../types';
 
@@ -19,6 +26,14 @@ interface Props {
   onWall: () => void;
   onShare?: () => void;
   author?: Author;
+  /** Best-effort guestbook notes grouped by tattoo id (from the wall fetch). */
+  messagesByTarget?: Map<string, GuestMessage[]>;
+  /** The viewer's own outgoing notes (local mirror) for instant echo. */
+  myMessages?: GuestMessage[];
+  /** The viewer's telegram id (to render self notes as "you"). */
+  myUserId?: string;
+  /** Send a note on this tattoo. */
+  onSendNote?: (artifactId: string, text: string) => void;
 }
 
 const TONE_LABEL_EN: Record<string, string> = {
@@ -37,6 +52,10 @@ export default function VerdictScreen({
   onWall,
   onShare,
   author,
+  messagesByTarget,
+  myMessages,
+  myUserId,
+  onSendNote,
 }: Props) {
   const { reading } = tattoo;
   const [typed, setTyped] = useState('');
@@ -44,6 +63,20 @@ export default function VerdictScreen({
   const [showBefore, setShowBefore] = useState(false);
   const [readingOpen, setReadingOpen] = useState(false);
   const [readingTouched, setReadingTouched] = useState(false);
+  const [draft, setDraft] = useState('');
+
+  const lang = getLocale();
+  const thread =
+    viewMode === 'gallery'
+      ? threadFor(tattoo.id, messagesByTarget ?? new Map(), myMessages, myUserId)
+      : [];
+
+  const submitNote = () => {
+    const clean = cleanText(draft);
+    if (!clean || !onSendNote) return;
+    onSendNote(tattoo.id, clean);
+    setDraft('');
+  };
 
   useEffect(() => {
     setTyped('');
@@ -51,6 +84,7 @@ export default function VerdictScreen({
     setShowBefore(false);
     setReadingOpen(false);
     setReadingTouched(false);
+    setDraft('');
   }, [reading.meaning]);
 
   useEffect(() => {
@@ -214,6 +248,97 @@ export default function VerdictScreen({
         <span className="iof-verdict__invoice-amount">$200</span>
         <span className="iof-verdict__invoice-tail">{t('result_invoice_tail')}</span>
       </div>
+
+      {/* ───── Guestbook — public notes on this tattoo (gallery only) ───── */}
+      {viewMode === 'gallery' && (
+        <div className="iof-verdict__card iof-notes">
+          <div className="iof-verdict__card-head">
+            <span className="iof-verdict__card-num">03</span>
+            <span className="iof-verdict__card-title">{t('notes_title')}</span>
+            {thread.length > 0 && (
+              <span className="iof-notes__count">{thread.length}</span>
+            )}
+          </div>
+
+          {thread.length === 0 ? (
+            <div className="iof-notes__empty">{t('notes_empty')}</div>
+          ) : (
+            <ul className="iof-notes__list">
+              {thread.map((m) => {
+                const isMine =
+                  (!!myUserId && m.fromUserId === myUserId) ||
+                  (!m.fromUserId && !!myMessages?.some((x) => x.id === m.id));
+                const name = isMine ? t('notes_you') : m.userName || '·';
+                return (
+                  <li key={m.id} className="iof-notes__item">
+                    {isMine ? (
+                      <span className="iof-notes__who iof-notes__who--me" aria-hidden>
+                        <span className="iof-notes__avatar iof-notes__avatar--me">
+                          {name[0]?.toUpperCase()}
+                        </span>
+                        <span className="iof-notes__name iof-notes__name--me">
+                          {name}
+                        </span>
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        className="iof-notes__who"
+                        // onClick + stopPropagation — note rows live inside
+                        // the scrollable verdict page. See scroll-vs-click.
+                        onClick={(ev) => {
+                          ev.stopPropagation();
+                          if (isInAigram && m.fromUserId)
+                            openAigramProfile(m.fromUserId);
+                        }}
+                        disabled={!isInAigram || !m.fromUserId}
+                        aria-label={`Open ${m.userName || 'user'}'s profile`}
+                      >
+                        <span className="iof-notes__avatar" aria-hidden>
+                          {m.userAvatarUrl ? (
+                            <img src={m.userAvatarUrl} alt="" draggable={false} />
+                          ) : (
+                            (m.userName || '?')[0]?.toUpperCase()
+                          )}
+                        </span>
+                        <span className="iof-notes__name">{name}</span>
+                      </button>
+                    )}
+                    <span className="iof-notes__text">{m.text}</span>
+                    <span className="iof-notes__time">{timeAgo(m.ts, lang)}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
+          {isInAigram ? (
+            <div className="iof-notes__compose">
+              <input
+                className="iof-notes__input"
+                type="text"
+                value={draft}
+                maxLength={MAX_LEN}
+                placeholder={t('notes_placeholder')}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') submitNote();
+                }}
+              />
+              <button
+                type="button"
+                className="iof-notes__send"
+                onPointerDown={submitNote}
+                disabled={!cleanText(draft)}
+              >
+                {t('notes_send')}
+              </button>
+            </div>
+          ) : (
+            <div className="iof-notes__hint">{t('notes_open_in_app')}</div>
+          )}
+        </div>
+      )}
 
       {/* ───── CTAs ───── */}
       <div className="iof-verdict__ctas">

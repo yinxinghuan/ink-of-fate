@@ -1,6 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useGameSave } from '@shared/save';
-import { isInAigram } from '@shared/runtime';
+import { isInAigram, telegramId, useGameEvent } from '@shared/runtime';
+import {
+  appendMessage,
+  guestbookNotifyConfig,
+  newMessage,
+} from '@shared/social/guestbook';
 import BoothScreen from './components/BoothScreen';
 import StudioScreen from './components/StudioScreen';
 import ProcessingScreen from './components/ProcessingScreen';
@@ -59,6 +64,10 @@ export default function InkOfFate() {
   const { savedData, persist } = useGameSave<InkOfFateSave>('ink-of-fate');
   const fateGen = useFateGen();
   const gallery = useGallery();
+  const gameEvent = useGameEvent();
+  // Per-artifact dedupe of note-notify within a session (a useRef Set, same
+  // shape as the like-notify dedupe in other games).
+  const notifiedRef = useRef<Set<string>>(new Set());
 
   const [phase, setPhase] = useState<Phase>('booth');
   const [current, setCurrent] = useState<Tattoo | null>(null);
@@ -164,7 +173,11 @@ export default function InkOfFate() {
       // Write to local mirror first (source of truth for UI), then
       // persist() as side-effect so the wall MINE tab sees the new
       // tattoo immediately without waiting for the cloud sync.
+      // Full read-modify-write — spread the mirror so existing guestbook
+      // `messages` (and any future fields) are NOT wiped when a new tattoo
+      // is added (partial-persist wipe). See useGameSave-mirror skill.
       const nextSave: InkOfFateSave = {
+        ...(mirror ?? { tattoos: [] }),
         tattoos: prependTattoo(mirror?.tattoos, t),
       };
       setMirror(nextSave);
@@ -200,6 +213,49 @@ export default function InkOfFate() {
     setCameFromWall(true);
     setPhase('result');
   };
+  // Leave a guestbook note on a tattoo. Stores the note in MY own save blob
+  // (read-modify-write through the mirror so existing notes/tattoos survive),
+  // then pings the artifact's author once per session. Skips self + authorless
+  // (demo / self-fallback) targets.
+  const sendMessage = useCallback(
+    (artifactId: string, text: string) => {
+      const author = authorOfCurrent;
+      const toUserId = author?.userId;
+      const isSelf =
+        !toUserId ||
+        toUserId === 'me' ||
+        (!!telegramId && String(toUserId) === String(telegramId));
+
+      const msg = newMessage(artifactId, isSelf ? undefined : toUserId, text);
+      if (!msg) return;
+
+      setMirror((prev) => {
+        const base = prev ?? { tattoos: [] };
+        const next = appendMessage(base, msg);
+        persist(next);
+        return next;
+      });
+
+      // Notify the author — once per artifact per session, never self/authorless.
+      if (!isSelf && toUserId && !notifiedRef.current.has(artifactId)) {
+        notifiedRef.current.add(artifactId);
+        const refUrl =
+          current && current.id === artifactId ? current.imageUrl : undefined;
+        gameEvent.trigger(
+          'inkfate_note',
+          guestbookNotifyConfig({
+            toUserId,
+            refUrl,
+            note: text,
+            template: '{sender_name} left a note on your ink',
+            imagePrompt: 'Someone left a note on the tattoo you got marked with.',
+          }),
+        );
+      }
+    },
+    [authorOfCurrent, current, persist, gameEvent],
+  );
+
   const handleShare = () => {
     if (!current) return;
     const text = `${current.reading.headline} — ticket ${current.ticketNumber} · alteru.studio/ink-of-fate`;
@@ -266,6 +322,10 @@ export default function InkOfFate() {
           shareLabel={shareLabel || undefined}
           shareDisabled={!!shareLabel}
           author={authorOfCurrent}
+          messagesByTarget={gallery.messagesByTarget}
+          myMessages={mirror?.messages}
+          myUserId={telegramId ?? undefined}
+          onSendNote={sendMessage}
         />
       )}
       {phase === 'wall' && (

@@ -73,6 +73,13 @@ const dict: Record<Locale, Record<string, string>> = {
     err_offline: 'The parlor is offline. Try again in a moment.',
 
     tip_first_touch: 'tap anywhere to enter',
+
+    notes_title: 'Notes',
+    notes_empty: 'No notes yet. Leave the first.',
+    notes_placeholder: 'Leave a note…',
+    notes_send: 'Send',
+    notes_you: 'you',
+    notes_open_in_app: 'Open in Aigram to leave a note.',
   },
   zh: {
     sign_title: 'INK OF FATE',
@@ -144,6 +151,13 @@ const dict: Record<Locale, Record<string, string>> = {
     err_offline: '店关门了。等会儿再来。',
 
     tip_first_touch: '点屏幕进店',
+
+    notes_title: '留言',
+    notes_empty: '还没有留言。来留第一条。',
+    notes_placeholder: '留句话……',
+    notes_send: '发送',
+    notes_you: '你',
+    notes_open_in_app: '在 Aigram 里打开才能留言。',
   },
 };
 

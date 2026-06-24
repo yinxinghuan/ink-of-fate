@@ -10,6 +10,10 @@ import {
   type AigramResponse,
 } from '@shared/runtime/bridge';
 import { getGameUuid } from '@shared/runtime/game-id';
+import {
+  messagesByTarget as buildMessagesByTarget,
+  type GuestMessage,
+} from '@shared/social/guestbook';
 import type { InkOfFateSave, Tattoo, WallEntry } from '../types';
 
 interface SaveRow {
@@ -22,12 +26,20 @@ const DISPLAY_CAP = 24;
 
 export interface UseGallery {
   entries: WallEntry[];
+  /** Best-effort guestbook notes grouped by tattoo id, aggregated from the
+   *  SAME save-row fetch that builds the wall. Each note is stamped with its
+   *  author's name/avatar (resolved alongside wall authors). */
+  messagesByTarget: Map<string, GuestMessage[]>;
   loaded: boolean;
   refresh: () => void;
 }
 
+const EMPTY_MESSAGES = new Map<string, GuestMessage[]>();
+
 export function useGallery(): UseGallery {
   const [entries, setEntries] = useState<WallEntry[]>([]);
+  const [msgByTarget, setMsgByTarget] =
+    useState<Map<string, GuestMessage[]>>(EMPTY_MESSAGES);
   const [loaded, setLoaded] = useState(false);
   const [nonce, setNonce] = useState(0);
 
@@ -48,6 +60,15 @@ export function useGallery(): UseGallery {
         );
         const rows = Array.isArray(res?.data) ? res.data : [];
 
+        // Guestbook notes — built from the SAME fetch (no second round-trip).
+        // Each note is stamped with fromUserId = the owning row's user_id.
+        const byTarget = buildMessagesByTarget(
+          rows.map((r) => ({
+            user_id: String(r.user_id ?? ''),
+            resource_data: r.resource_data ?? '',
+          })),
+        );
+
         // Flatten ALL tattoos from each user's save row (not just [0]).
         const pairs: Array<{ userId: string; tattoo: Tattoo }> = [];
         for (const row of rows) {
@@ -66,8 +87,15 @@ export function useGallery(): UseGallery {
         pairs.sort((a, b) => (b.tattoo.createdAt ?? 0) - (a.tattoo.createdAt ?? 0));
         const limited = pairs.slice(0, DISPLAY_CAP);
 
-        // Resolve each unique author's profile once.
-        const uniqueIds = Array.from(new Set(limited.map((p) => p.userId)));
+        // Resolve each unique author's profile once — wall authors PLUS every
+        // user who left a note (so note chips render avatar + name too).
+        const noteAuthorIds: string[] = [];
+        for (const list of byTarget.values()) {
+          for (const m of list) if (m.fromUserId) noteAuthorIds.push(m.fromUserId);
+        }
+        const uniqueIds = Array.from(
+          new Set([...limited.map((p) => p.userId), ...noteAuthorIds]),
+        );
         const profileEntries = await Promise.all(
           uniqueIds.map(async (uid) => {
             try {
@@ -99,8 +127,26 @@ export function useGallery(): UseGallery {
             };
           }),
         );
+
+        // Stamp each note with its author's resolved name/avatar.
+        const stamped = new Map<string, GuestMessage[]>();
+        for (const [target, list] of byTarget) {
+          stamped.set(
+            target,
+            list.map((m) => {
+              const p = m.fromUserId ? profileMap.get(m.fromUserId) : null;
+              return p
+                ? { ...m, userName: p.name, userAvatarUrl: p.head_url }
+                : m;
+            }),
+          );
+        }
+        setMsgByTarget(stamped);
       } catch {
-        if (!cancelled) setEntries([]);
+        if (!cancelled) {
+          setEntries([]);
+          setMsgByTarget(EMPTY_MESSAGES);
+        }
       } finally {
         if (!cancelled) setLoaded(true);
       }
@@ -110,7 +156,7 @@ export function useGallery(): UseGallery {
     };
   }, [nonce]);
 
-  return { entries, loaded, refresh };
+  return { entries, messagesByTarget: msgByTarget, loaded, refresh };
 }
 
 export function isSelf(entry: WallEntry): boolean {

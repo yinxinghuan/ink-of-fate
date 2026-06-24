@@ -1,5 +1,7 @@
 // ─── Domain types ────────────────────────────────────────────────────────
 
+import type { GuestMessage } from '@shared/social/guestbook';
+
 export type TattooStyle =
   | 'sailor-jerry'
   | 'japanese-irezumi'
@@ -47,6 +49,9 @@ export interface Tattoo {
 
 export interface InkOfFateSave {
   tattoos: Tattoo[];
+  /** Guestbook notes this user has left on others' (or own) tattoos. Stored in
+   *  the sender's own blob; aggregated cross-user at read time. */
+  messages?: GuestMessage[];
   _lastActive?: number;
 }
 
