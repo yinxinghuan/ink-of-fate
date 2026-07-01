@@ -79,7 +79,8 @@ const dict: Record<Locale, Record<string, string>> = {
     notes_placeholder: 'Leave a note…',
     notes_send: 'Send',
     notes_you: 'you',
-    notes_open_in_app: 'Open in Aigram to leave a note.',
+    notes_open_in_app: 'Open in AlterU to leave a note.',
+    download_alteru: 'Get AlterU on the App Store',
   },
   zh: {
     sign_title: 'INK OF FATE',
@@ -157,7 +158,8 @@ const dict: Record<Locale, Record<string, string>> = {
     notes_placeholder: '留句话……',
     notes_send: '发送',
     notes_you: '你',
-    notes_open_in_app: '在 Aigram 里打开才能留言。',
+    notes_open_in_app: '在 AlterU 中打开才能留言。',
+    download_alteru: '下载 AlterU',
   },
 };
 

@@ -11,6 +11,8 @@ import { t, getLocale } from '../i18n';
 import { placementLabel, styleLabel } from '../utils/prompts';
 import type { Tattoo } from '../types';
 
+const ALTERU_APP_URL = 'https://apps.apple.com/app/id6769646546';
+
 interface Author {
   userId: string;
   userName?: string;
@@ -335,7 +337,12 @@ export default function VerdictScreen({
               </button>
             </div>
           ) : (
-            <div className="iof-notes__hint">{t('notes_open_in_app')}</div>
+            <div className="iof-notes__hint iof-notes__download">
+              <span>{t('notes_open_in_app')}</span>
+              <a href={ALTERU_APP_URL} target="_blank" rel="noopener noreferrer">
+                {t('download_alteru')}
+              </a>
+            </div>
           )}
         </div>
       )}
