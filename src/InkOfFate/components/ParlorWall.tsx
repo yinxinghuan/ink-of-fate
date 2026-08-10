@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { isInAigram, openAigramProfile } from '@shared/runtime';
+import { isInAigramNow, openAigramProfile } from '@shared/runtime';
 import { t } from '../i18n';
 import { placementLabel, styleLabel } from '../utils/prompts';
 import type { Tattoo, WallEntry } from '../types';
@@ -139,9 +139,9 @@ export default function ParlorWall({
                     // See cross-user-profile-tap skill.
                     onClick={(ev) => {
                       ev.stopPropagation();
-                      if (isInAigram) openAigramProfile(e.userId);
+                      if (isInAigramNow()) openAigramProfile(e.userId);
                     }}
-                    disabled={!isInAigram}
+                    disabled={!isInAigramNow()}
                     aria-label={`Open ${e.userName || 'user'}'s profile`}
                   >
                     <span className="iof-wall__card-avatar" aria-hidden>

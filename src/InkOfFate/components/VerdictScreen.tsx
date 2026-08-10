@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { isInAigram, openAigramProfile } from '@shared/runtime';
+import { isInAigramNow, openAigramProfile } from '@shared/runtime';
 import {
   threadFor,
   timeAgo,
@@ -156,9 +156,9 @@ export default function VerdictScreen({
             // See cross-user-profile-tap skill.
             onClick={(ev) => {
               ev.stopPropagation();
-              if (isInAigram) openAigramProfile(author.userId);
+              if (isInAigramNow()) openAigramProfile(author.userId);
             }}
-            disabled={!isInAigram}
+            disabled={!isInAigramNow()}
             aria-label={`Open ${author.userName || 'user'}'s profile`}
           >
             <span className="iof-verdict__author-label">— marked:</span>
@@ -290,10 +290,10 @@ export default function VerdictScreen({
                         // the scrollable verdict page. See scroll-vs-click.
                         onClick={(ev) => {
                           ev.stopPropagation();
-                          if (isInAigram && m.fromUserId)
+                          if (isInAigramNow() && m.fromUserId)
                             openAigramProfile(m.fromUserId);
                         }}
-                        disabled={!isInAigram || !m.fromUserId}
+                        disabled={!isInAigramNow() || !m.fromUserId}
                         aria-label={`Open ${m.userName || 'user'}'s profile`}
                       >
                         <span className="iof-notes__avatar" aria-hidden>
@@ -314,7 +314,7 @@ export default function VerdictScreen({
             </ul>
           )}
 
-          {isInAigram ? (
+          {isInAigramNow() ? (
             <div className="iof-notes__compose">
               <input
                 className="iof-notes__input"

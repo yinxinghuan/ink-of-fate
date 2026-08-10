@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useGameSave } from '@shared/save';
-import { isInAigram, telegramId, useGameEvent } from '@shared/runtime';
+import { isInAigramNow, getTelegramId, useGameEvent } from '@shared/runtime';
 import {
   appendMessage,
   guestbookNotifyConfig,
@@ -224,7 +224,7 @@ export default function InkOfFate() {
       const isSelf =
         !toUserId ||
         toUserId === 'me' ||
-        (!!telegramId && String(toUserId) === String(telegramId));
+        (!!getTelegramId()! && String(toUserId) === String(getTelegramId()!));
 
       const msg = newMessage(artifactId, isSelf ? undefined : toUserId, text);
       if (!msg) return;
@@ -318,13 +318,13 @@ export default function InkOfFate() {
           viewMode={cameFromWall ? 'gallery' : 'booking'}
           onNew={handleNew}
           onWall={handleWall}
-          onShare={isInAigram ? undefined : handleShare}
+          onShare={isInAigramNow() ? undefined : handleShare}
           shareLabel={shareLabel || undefined}
           shareDisabled={!!shareLabel}
           author={authorOfCurrent}
           messagesByTarget={gallery.messagesByTarget}
           myMessages={mirror?.messages}
-          myUserId={telegramId ?? undefined}
+          myUserId={getTelegramId()! ?? undefined}
           onSendNote={sendMessage}
         />
       )}

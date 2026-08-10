@@ -5,8 +5,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   callAigramAPI,
-  isInAigram,
-  telegramId,
+  isInAigramNow,
+  getTelegramId,
   type AigramResponse,
 } from '@shared/runtime/bridge';
 import { getGameUuid } from '@shared/runtime/game-id';
@@ -47,7 +47,7 @@ export function useGallery(): UseGallery {
 
   useEffect(() => {
     const sessionId = getGameUuid();
-    if (!isInAigram || !sessionId) {
+    if (!isInAigramNow() || !sessionId) {
       setLoaded(true);
       return;
     }
@@ -160,5 +160,5 @@ export function useGallery(): UseGallery {
 }
 
 export function isSelf(entry: WallEntry): boolean {
-  return !!telegramId && String(entry.userId) === String(telegramId);
+  return !!getTelegramId()! && String(entry.userId) === String(getTelegramId()!);
 }
