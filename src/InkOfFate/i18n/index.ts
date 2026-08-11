@@ -166,7 +166,7 @@ const dict: Record<Locale, Record<string, string>> = {
 function detectLocale(): Locale {
   if (typeof window === 'undefined') return 'en';
   try {
-    const override = localStorage.getItem('game_locale');
+    const override = alteruLocalStorage.getItem('game_locale');
     if (override === 'en' || override === 'zh') return override;
   } catch {
     /* ignore */
