@@ -9,6 +9,7 @@
 - 渲染方式：Canvas/WebGL
 - 依赖摘录：@types/react@^18.2.0, @types/react-dom@^18.2.0, @vitejs/plugin-react@^4.2.1, less@^4.2.0, react@^18.2.0, react-dom@^18.2.0, typescript@^5.3.3, vite@^5.1.0
 - 平台元信息：meta.title=Ink of Fate；cover_url=/poster.png；category=social；uuid=4f8329f2-0988-4e86-861e-f464deddc1c0
+- 生成媒体：纹身结果通过 AlterU Media Service 的单参考 edit 模式生成，永久游戏 UUID 作为 session_id，固定输出 512×512 PNG；命运解读仍使用 Aigram game-chat。
 
 ## 2. 目录结构
 
@@ -25,6 +26,7 @@
 - `src/shared/runtime/useUpload.ts`：游戏源码模块。
 - `src/shared/runtime/useChat.ts`：游戏源码模块。
 - `src/shared/runtime/useGenImage.ts`：游戏源码模块。
+- `src/shared/runtime/media.ts`：统一媒体任务、尺寸拟合、结构化错误、轮询和幂等请求客户端。
 - `src/shared/runtime/bridge.ts`：游戏源码模块。
 - `src/shared/runtime/game-id.ts`：游戏源码模块。
 - `src/shared/runtime/useGameEvent.ts`：游戏源码模块。
@@ -67,7 +69,7 @@
 - 多语言：包含 i18n / locale 检测或 `t()` 文案函数。
 - 存储：使用 localStorage、useGameSave 或 persist 保存分数、收藏、墙数据或本地状态。
 - Aigram 运行时：接入 `@shared/runtime` 或平台桥接能力，用于用户、资料页、分享、通知或平台 API。
-- AI / 生成接口：包含图像生成、视觉识别、ref_url 或 img2img 相关流程。
+- AI / 生成接口：`useFateGen.ts` 上传或读取玩家公网头像，先生成结构化解读，再调用单参考 edit。每次主动生成创建一个 request_id；网络结果不明时复用该 ID，结构化可重试失败则等待服务端建议时长并创建新 ID。提示词把完整身份与原构图置于纹身设计之前。
 - 社交墙 / 归档：包含 wall、gallery、feed 或 archive 数据流与浏览界面。
 
 ## 4. 扩展点
@@ -77,3 +79,5 @@
 - 调视觉：修改主样式文件中的颜色、间距、动画时长、网格尺寸和响应式规则。
 - 改文案：修改 i18n 字典、组件内标题按钮文案，保持 zh/en 同步。
 - 加平台能力：在已有 `@shared/runtime`、useGameSave、排行榜、墙或通知调用附近扩展，避免另起一套存储。
+- 改媒体画幅、重试或错误策略：编辑 `src/shared/runtime/useGenImage.ts`；公共协议只在 `src/shared/runtime/media.ts` 扩展。
+- 改纹身编辑合同：编辑 `src/InkOfFate/utils/prompts.ts`；唯一允许的新元素应继续是已有可见表面上的纹身。
