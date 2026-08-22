@@ -5,10 +5,9 @@
 import { useEffect, useState } from 'react';
 import {
   callAigramAPI,
-  isInAigramNow,
-  getTelegramId,
   type AigramResponse,
 } from '@shared/runtime/bridge';
+import { waitForAigramIdentity } from '@shared/runtime/identity-ready';
 
 export interface PlayerProfile {
   telegramId: string;
@@ -20,21 +19,22 @@ export function usePlayerProfile(): PlayerProfile | null {
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
 
   useEffect(() => {
-    if (!isInAigramNow() || !getTelegramId()!) return;
     let cancelled = false;
     (async () => {
+      const telegramId = await waitForAigramIdentity();
+      if (cancelled || !telegramId) return;
       try {
         const res = await callAigramAPI<
           AigramResponse<{ name?: string; head_url?: string }>
         >(
-          `/note/telegram/user/get/info/by/telegram_id?telegram_id=${encodeURIComponent(getTelegramId()!!)}`,
+          `/note/telegram/user/get/info/by/telegram_id?telegram_id=${encodeURIComponent(telegramId)}`,
           'GET',
         );
         const d = res?.data ?? null;
         if (cancelled) return;
         if (d && (d.name || d.head_url)) {
           setProfile({
-            telegramId: getTelegramId()!!,
+            telegramId,
             name: d.name,
             avatarUrl: d.head_url,
           });
